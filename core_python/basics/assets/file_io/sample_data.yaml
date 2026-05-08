@@ -1,0 +1,6 @@
+project: python-mastery
+version: 3.10+
+features:
+- JSON
+- CSV
+- YAML

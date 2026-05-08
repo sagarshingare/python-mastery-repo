@@ -1,8 +1,33 @@
+Metadata-Version: 2.4
+Name: python-mastery-repo
+Version: 0.1.0
+Summary: Enterprise-grade Python mastery repository with production-ready examples, tutorials, and interview preparation.
+Author-email: Python Mastery Maintainers <maintainers@example.com>
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: fastapi>=0.101.0
+Requires-Dist: uvicorn[standard]>=0.23.0
+Requires-Dist: pydantic>=2.9.0
+Requires-Dist: pytest>=8.4.0
+Requires-Dist: pytest-mock>=3.14.0
+Requires-Dist: pandas>=2.2.0
+Requires-Dist: numpy>=2.0.0
+Requires-Dist: scipy>=1.11.0
+Requires-Dist: python-dotenv>=1.0.0
+Requires-Dist: requests>=2.31.0
+Requires-Dist: structlog>=24.0.0
+Requires-Dist: pyspark>=3.5.0
+Dynamic: license-file
+Dynamic: requires-python
+
 # Python Mastery Repository
 
 A production-grade, enterprise-ready repository for Python mastery. This repository is designed to help developers progress from beginner to advanced through hands-on examples, architecture guidance, interview preparation, and real-world projects.
-
-**Python Version**: 3.9+
 
 ## What’s included
 
@@ -33,23 +58,17 @@ cd python-mastery-repo
 
 ```bash
 python3 -m venv .venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-3. Set up the Python path for module imports:
-
-```bash
-export PYTHONPATH=$(pwd)  # Add this to your shell profile for persistence
-```
-
-4. Run core tests:
+3. Run core tests:
 
 ```bash
 make test
 ```
 
-5. Launch the example API service:
+4. Launch the example API service:
 
 ```bash
 make run-api

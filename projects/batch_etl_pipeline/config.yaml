@@ -1,0 +1,3 @@
+source_path: projects/batch_etl_pipeline/sample_data/sales.csv
+target_path: projects/batch_etl_pipeline/sample_data/transformed_sales.csv
+chunk_size: 100

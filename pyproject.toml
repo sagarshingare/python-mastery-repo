@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=65.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "python-mastery-repo"
+version = "0.1.0"
+description = "Enterprise-grade Python mastery repository with production-ready examples, tutorials, and interview preparation."
+authors = [
+  {name = "Python Mastery Maintainers", email = "maintainers@example.com"}
+]
+readme = "README.md"
+requires-python = ">=3.9"
+classifiers = [
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent"
+]
+
+dependencies = [
+    "fastapi>=0.101.0",
+    "uvicorn[standard]>=0.23.0",
+    "pydantic>=2.9.0",
+    "pytest>=8.4.0",
+    "pytest-mock>=3.14.0",
+    "pandas>=2.2.0",
+    "numpy>=2.0.0",
+    "scipy>=1.11.0",
+    "python-dotenv>=1.0.0",
+    "requests>=2.31.0",
+    "structlog>=24.0.0",
+    "pyspark>=3.5.0",
+]
+
+[tool.pytest]
+minversion = "7.0"
+addopts = "-q --disable-warnings"
+python_files = ["test_*.py", "*_test.py"]

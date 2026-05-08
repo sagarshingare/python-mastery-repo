@@ -1,0 +1,5 @@
+sales_date,product_name,quantity,unit_price,region
+2026-05-01,Widget A,10,12.5,us-east
+2026-05-02,Widget B,5,25.0,us-west
+2026-05-03,Widget C,8,18.75,eu-central
+2026-05-04,Widget A,2,12.5,ap-south

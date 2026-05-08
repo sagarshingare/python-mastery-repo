@@ -1,0 +1,1 @@
+"""LeetCode-style practice repository."""

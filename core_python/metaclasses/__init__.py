@@ -1,0 +1,1 @@
+"""Metaclass examples for advanced type customization and class creation.""
