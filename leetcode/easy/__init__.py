@@ -1,1 +1,1 @@
-"""Easy LeetCode practice problems.""
+"""Easy LeetCode practice problems."""
