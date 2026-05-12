@@ -1,13 +1,13 @@
 # LeetCode Practice - Production-Ready Solutions
 
-A comprehensive collection of **100+ LeetCode problems** with production-level solutions, detailed explanations, multiple approaches, and complexity analysis. Perfect for interview preparation and mastering data structures & algorithms.
+A comprehensive collection of **50+ LeetCode problems** with production-level solutions, detailed explanations, multiple approaches, and complexity analysis. Perfect for interview preparation and mastering data structures & algorithms.
 
 ## 📚 Overview
 
 This module provides:
-- ✅ **60+ Easy Problems** - Fundamentals and common patterns
-- ✅ **80+ Medium Problems** - Advanced techniques and optimization
-- ✅ **50+ Hard Problems** - Complex algorithms and edge cases
+- ✅ **20+ Easy Problems** - Fundamentals and common patterns
+- ✅ **20+ Medium Problems** - Advanced techniques and optimization
+- ✅ **10+ Hard Problems** - Complex algorithms and edge cases
 - ✅ **Multiple Solutions** - Brute force, optimized, and production approaches
 - ✅ **Time/Space Analysis** - Complexity breakdown for each solution
 - ✅ **Interactive CLI** - Browse, search, and run problems
@@ -57,12 +57,12 @@ python -m leetcode.run_problems stats
 
 | Category | Count |
 |----------|-------|
-| **Easy Problems** | 60+ |
-| **Medium Problems** | 80+ |
-| **Hard Problems** | 50+ |
-| **Total Problems** | 112+ |
-| **Total Code Lines** | 4000+ |
-| **Test Cases** | 200+ |
+| **Easy Problems** | 24+ |
+| **Medium Problems** | 20+ |
+| **Hard Problems** | 14+ |
+| **Total Problems** | 58+ |
+| **Total Code Lines** | 2000+ |
+| **Test Cases** | 70+ |
 
 ## 💡 Key Features
 

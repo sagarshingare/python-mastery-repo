@@ -96,6 +96,91 @@ def problem_39_combination_sum(candidates: List[int], target: int) -> List[List[
     return result
 
 
+def problem_238_product_of_array_except_self(nums: List[int]) -> List[int]:
+    """
+    LeetCode #238: Product of Array Except Self
+    
+    Problem: Given an integer array nums, return an array answer such that answer[i]
+    is equal to the product of all the elements of nums except nums[i]. Solve it
+    without using division and in O(n) time.
+    
+    Approach: Prefix and Suffix Products
+    - First pass computes product of all left elements
+    - Second pass multiplies by product of all right elements
+    - Time: O(n), Space: O(n)
+    """
+    n = len(nums)
+    answer = [1] * n
+    left_product = 1
+    for i in range(n):
+        answer[i] = left_product
+        left_product *= nums[i]
+    
+    right_product = 1
+    for i in range(n - 1, -1, -1):
+        answer[i] *= right_product
+        right_product *= nums[i]
+    
+    return answer
+
+
+def problem_46_permutations(nums: List[int]) -> List[List[int]]:
+    """
+    LeetCode #46: Permutations
+    
+    Problem: Given a collection of distinct integers, return all possible permutations.
+    
+    Approach: Backtracking
+    - Build permutations by exploring every candidate
+    - Use visited set to avoid reuse
+    - Time: O(n * n!), Space: O(n! * n)
+    """
+    result = []
+    used = [False] * len(nums)
+    
+    def backtrack(path: List[int]) -> None:
+        if len(path) == len(nums):
+            result.append(path[:])
+            return
+        
+        for i in range(len(nums)):
+            if used[i]:
+                continue
+            used[i] = True
+            path.append(nums[i])
+            backtrack(path)
+            path.pop()
+            used[i] = False
+    
+    backtrack([])
+    return result
+
+
+def problem_139_word_break(s: str, wordDict: List[str]) -> bool:
+    """
+    LeetCode #139: Word Break
+    
+    Problem: Given a string s and a dictionary of strings wordDict, return true if
+    s can be segmented into a space-separated sequence of one or more dictionary words.
+    
+    Approach: Dynamic Programming
+    - dp[i] indicates if s[:i] can be segmented
+    - For each position, check all dictionary words as suffixes
+    - Time: O(n * m * k), Space: O(n)
+    """
+    word_set = set(wordDict)
+    dp = [False] * (len(s) + 1)
+    dp[0] = True
+    
+    for i in range(1, len(s) + 1):
+        for j in range(i):
+            if dp[j] and s[j:i] in word_set:
+                dp[i] = True
+                break
+    
+    return dp[len(s)]
+
+
 def problem_49_group_anagrams(strs: List[str]) -> List[List[str]]:
     """
     LeetCode #49: Group Anagrams
@@ -635,7 +720,7 @@ def problem_146_lru_cache(capacity: int) -> 'LRUCache':
     
     Note: Returns cache object, see LRUCache class below
     """
-    pass
+    return LRUCache(capacity)
 
 
 class LRUCache:
@@ -766,7 +851,20 @@ def run_tests() -> None:
         ["0", "0", "0", "0", "0"]
     ]
     print(f"  Test 1: {problem_200_number_of_islands(grid)} == 1")
-    
+
+    # Product of Array Except Self
+    print("\n[Problem 238] Product of Array Except Self")
+    print(f"  Test 1: {problem_238_product_of_array_except_self([1,2,3,4])} == [24,12,8,6]")
+
+    # Permutations
+    print("\n[Problem 46] Permutations")
+    print(f"  Test 1: {problem_46_permutations([1,2,3])} == [[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]")
+
+    # Word Break
+    print("\n[Problem 139] Word Break")
+    print(f"  Test 1: {problem_139_word_break('leetcode', ['leet','code'])} == True")
+    print(f"  Test 2: {problem_139_word_break('applepenapple', ['apple','pen'])} == True")
+
     print("\n" + "=" * 80)
 
 

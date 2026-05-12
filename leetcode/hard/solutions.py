@@ -435,6 +435,114 @@ def problem_42_trapping_rain_water(height: List[int]) -> int:
     return water
 
 
+def problem_239_sliding_window_maximum(nums: List[int], k: int) -> List[int]:
+    """
+    LeetCode #239: Sliding Window Maximum
+    
+    Problem: Given an array nums and a sliding window size k, return the maximum
+    value in each sliding window.
+    
+    Approach: Monotonic Deque
+    - Keep indices of potential max values in decreasing order
+    - Remove indices that fall out of the sliding window
+    - Time: O(n), Space: O(k)
+    """
+    if not nums or k == 0:
+        return []
+    
+    result = []
+    window = deque()
+    
+    for i, num in enumerate(nums):
+        while window and window[0] <= i - k:
+            window.popleft()
+        while window and nums[window[-1]] < num:
+            window.pop()
+        window.append(i)
+        if i >= k - 1:
+            result.append(nums[window[0]])
+    
+    return result
+
+
+def problem_84_largest_rectangle_in_histogram(heights: List[int]) -> int:
+    """
+    LeetCode #84: Largest Rectangle in Histogram
+    
+    Problem: Given a list of bar heights, return the largest rectangle area within
+    the histogram.
+    
+    Approach: Monotonic stack
+    - Use a stack to maintain increasing heights
+    - Compute area when height decreases
+    - Time: O(n), Space: O(n)
+    """
+    stack = []
+    max_area = 0
+    extended = heights + [0]
+    
+    for i, height in enumerate(extended):
+        while stack and extended[stack[-1]] > height:
+            h = extended[stack.pop()]
+            width = i if not stack else i - stack[-1] - 1
+            max_area = max(max_area, h * width)
+        stack.append(i)
+    
+    return max_area
+
+
+def problem_297_serialize_deserialize_binary_tree(root: Optional['TreeNode']) -> Tuple[str, Optional['TreeNode']]:
+    """
+    LeetCode #297: Serialize and Deserialize Binary Tree
+    
+    Problem: Design algorithms to serialize a binary tree into a string and deserialize
+    it back into the original tree structure.
+    
+    Approach: BFS Serialization + Reconstruction
+    - Use level-order traversal with null markers
+    - Reconstruct nodes from token list
+    - Time: O(n), Space: O(n)
+    """
+    def serialize(node: Optional['TreeNode']) -> str:
+        if not node:
+            return "#"
+        values = []
+        queue = deque([node])
+        while queue:
+            current = queue.popleft()
+            if current:
+                values.append(str(current.val))
+                queue.append(current.left)
+                queue.append(current.right)
+            else:
+                values.append("#")
+        return ",".join(values)
+    
+    def deserialize(data: str) -> Optional['TreeNode']:
+        tokens = data.split(",")
+        if tokens[0] == "#":
+            return None
+        
+        root = TreeNode(int(tokens[0]))
+        queue = deque([root])
+        i = 1
+        
+        while queue and i < len(tokens):
+            node = queue.popleft()
+            if tokens[i] != "#":
+                node.left = TreeNode(int(tokens[i]))
+                queue.append(node.left)
+            i += 1
+            if i < len(tokens) and tokens[i] != "#":
+                node.right = TreeNode(int(tokens[i]))
+                queue.append(node.right)
+            i += 1
+        
+        return root
+    
+    return serialize(root), deserialize(serialize(root))
+
+
 def problem_32_longest_valid_parentheses(s: str) -> int:
     """
     LeetCode #32: Longest Valid Parentheses
@@ -580,7 +688,22 @@ def run_tests() -> None:
     print("\n[Problem 32] Longest Valid Parentheses")
     print(f"  Test 1: {problem_32_longest_valid_parentheses('(()')} == 2")
     print(f"  Test 2: {problem_32_longest_valid_parentheses(')()())')} == 4")
-    
+
+    # Sliding Window Maximum
+    print("\n[Problem 239] Sliding Window Maximum")
+    print(f"  Test 1: {problem_239_sliding_window_maximum([1,3,-1,-3,5,3,6,7], 3)} == [3,3,5,5,6,7]")
+
+    # Largest Rectangle in Histogram
+    print("\n[Problem 84] Largest Rectangle in Histogram")
+    print(f"  Test 1: {problem_84_largest_rectangle_in_histogram([2,1,5,6,2,3])} == 10")
+
+    # Serialize / Deserialize Binary Tree
+    print("\n[Problem 297] Serialize/Deserialize Binary Tree")
+    root = TreeNode(1, TreeNode(2), TreeNode(3, TreeNode(4), TreeNode(5)))
+    serialized, deserialized = problem_297_serialize_deserialize_binary_tree(root)
+    print(f"  Serialized: {serialized}")
+    print(f"  Deserialized root value: {deserialized.val} == 1")
+
     print("\n" + "=" * 80)
 
 

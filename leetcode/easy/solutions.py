@@ -194,6 +194,116 @@ def problem_88_merge_sorted_array(nums1: List[int], m: int, nums2: List[int], n:
         p -= 1
 
 
+def problem_66_plus_one(digits: List[int]) -> List[int]:
+    """
+    LeetCode #66: Plus One
+    
+    Problem: Given a non-empty array of decimal digits representing a non-negative
+    integer, increment one to the integer. The digits are stored such that the most
+    significant digit is at the head of the list.
+    
+    Approach: Reverse Scan with Carry
+    - Traverse digits from right to left
+    - Add carry and propagate
+    - Time: O(n), Space: O(1)
+    """
+    carry = 1
+    for i in range(len(digits) - 1, -1, -1):
+        total = digits[i] + carry
+        digits[i] = total % 10
+        carry = total // 10
+        if carry == 0:
+            break
+    if carry:
+        digits.insert(0, carry)
+    return digits
+
+
+def problem_136_single_number(nums: List[int]) -> int:
+    """
+    LeetCode #136: Single Number
+    
+    Problem: Given a non-empty array of integers, every element appears twice except
+    for one. Find the single one.
+    
+    Approach: Bitwise XOR
+    - XOR of duplicate numbers cancels out
+    - Time: O(n), Space: O(1)
+    """
+    result = 0
+    for num in nums:
+        result ^= num
+    return result
+
+
+def problem_26_remove_duplicates_from_sorted_array(nums: List[int]) -> int:
+    """
+    LeetCode #26: Remove Duplicates from Sorted Array
+    
+    Problem: Given a sorted array nums, remove the duplicates in-place such that each
+    unique element appears only once and return the new length.
+    
+    Approach: Two Pointers
+    - Use slow pointer to place unique values
+    - Use fast pointer to scan the array
+    - Time: O(n), Space: O(1)
+    """
+    if not nums:
+        return 0
+    slow = 0
+    for fast in range(1, len(nums)):
+        if nums[fast] != nums[slow]:
+            slow += 1
+            nums[slow] = nums[fast]
+    return slow + 1
+
+
+def problem_141_linked_list_cycle(head: Optional['ListNode']) -> bool:
+    """
+    LeetCode #141: Linked List Cycle
+    
+    Problem: Given head, determine if the linked list has a cycle in it.
+    
+    Approach: Fast and Slow Pointers
+    - Move fast pointer by two steps and slow pointer by one step
+    - If they ever meet, there is a cycle
+    - Time: O(n), Space: O(1)
+    """
+    slow = fast = head
+    while fast and fast.next:
+        slow = slow.next
+        fast = fast.next.next
+        if slow == fast:
+            return True
+    return False
+
+
+def problem_202_happy_number(n: int) -> bool:
+    """
+    LeetCode #202: Happy Number
+    
+    Problem: Determine if a number is happy. A happy number eventually reaches 1
+    when replacing the number by the sum of the squares of its digits.
+    
+    Approach: Cycle Detection with Hash Set
+    - Track previously seen sums to detect loops
+    - Time: O(log n * k), Space: O(log n)
+    """
+    def next_value(x: int) -> int:
+        total = 0
+        while x:
+            digit = x % 10
+            total += digit * digit
+            x //= 10
+        return total
+
+    seen = set()
+    while n != 1 and n not in seen:
+        seen.add(n)
+        n = next_value(n)
+    return n == 1
+
+
 def problem_27_remove_element(nums: List[int], val: int) -> int:
     """
     LeetCode #27: Remove Element
@@ -731,7 +841,39 @@ def run_tests() -> None:
     print(f"  Test 1: {problem_9_palindrome_number(121)} == True")
     print(f"  Test 2: {problem_9_palindrome_number(-121)} == False")
     print(f"  Test 3: {problem_9_palindrome_number(10)} == False")
-    
+
+    # Plus One
+    print("\n[Problem 66] Plus One")
+    print(f"  Test 1: {problem_66_plus_one([1, 2, 3])} == [1, 2, 4]")
+    print(f"  Test 2: {problem_66_plus_one([9, 9, 9])} == [1, 0, 0, 0]")
+
+    # Single Number
+    print("\n[Problem 136] Single Number")
+    print(f"  Test 1: {problem_136_single_number([2, 2, 1])} == 1")
+    print(f"  Test 2: {problem_136_single_number([4, 1, 2, 1, 2])} == 4")
+
+    # Remove Duplicates from Sorted Array
+    print("\n[Problem 26] Remove Duplicates from Sorted Array")
+    nums_test = [1, 1, 2]
+    print(f"  Test 1: {problem_26_remove_duplicates_from_sorted_array(nums_test)} == 2")
+
+    # Linked List Cycle
+    print("\n[Problem 141] Linked List Cycle")
+    node1 = ListNode(3)
+    node2 = ListNode(2)
+    node3 = ListNode(0)
+    node4 = ListNode(-4)
+    node1.next = node2
+    node2.next = node3
+    node3.next = node4
+    node4.next = node2
+    print(f"  Test 1: {problem_141_linked_list_cycle(node1)} == True")
+
+    # Happy Number
+    print("\n[Problem 202] Happy Number")
+    print(f"  Test 1: {problem_202_happy_number(19)} == True")
+    print(f"  Test 2: {problem_202_happy_number(2)} == False")
+
     print("\n" + "=" * 80)
 
 
