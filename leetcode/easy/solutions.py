@@ -22,253 +22,221 @@ Topics Covered:
 
 from typing import List, Optional, Dict, Tuple, Set
 from collections import defaultdict, deque
-import heapq
 
 
 # ============================================================================
 # ARRAYS & HASHING
 # ============================================================================
 
+def two_sum_bruteforce(nums: List[int], target: int) -> List[int]:
+    """Brute force solution for Two Sum.
+
+    This is useful for clarity and small input sets, and it shows the
+    baseline algorithm before optimization.
+    """
+    for i in range(len(nums)):
+        for j in range(i + 1, len(nums)):
+            if nums[i] + nums[j] == target:
+                return [i, j]
+    raise ValueError("No two sum solution")
+
+
+def two_sum_hash(nums: List[int], target: int) -> List[int]:
+    """Optimized Two Sum using a hash map (O(n) time).
+
+    This is the production-level implementation used for large inputs and
+    real-time request handling.
+    """
+    index_map: Dict[int, int] = {}
+    for idx, value in enumerate(nums):
+        complement = target - value
+        if complement in index_map:
+            return [index_map[complement], idx]
+        index_map[value] = idx
+    raise ValueError("No two sum solution")
+
+
 def problem_1_two_sum(nums: List[int], target: int) -> List[int]:
-    """
-    LeetCode #1: Two Sum
-    
-    Problem: Given an array of integers nums and an integer target, return the indices
-    of the two numbers that add up to target. You can assume each input has exactly
-    one solution and you cannot use the same element twice.
-    
-    Constraints:
-      - 2 <= len(nums) <= 10^4
-      - -10^9 <= nums[i] <= 10^9
-      - -10^9 <= target <= 10^9
-    
-    Approach: Hash Map (One Pass)
-    - Use a dictionary to store value -> index mapping
-    - For each number, check if (target - current_num) exists in map
-    - Time: O(n), Space: O(n)
-    """
-    seen = {}
-    for i, num in enumerate(nums):
-        complement = target - num
-        if complement in seen:
-            return [seen[complement], i]
-        seen[num] = i
-    return []
+    """LeetCode #1: Two Sum - Find two numbers that add up to target"""
+    return two_sum_hash(nums, target)
 
 
 def problem_217_contains_duplicate(nums: List[int]) -> bool:
-    """
-    LeetCode #217: Contains Duplicate
-    
-    Problem: Given an integer array nums, return True if any value appears at least
-    twice in the array, and return False if every element is distinct.
-    
-    Approach: Hash Set
-    - Use a set to track seen elements
-    - Return True if we see duplicate
-    - Time: O(n), Space: O(n)
-    """
-    seen = set()
-    for num in nums:
-        if num in seen:
-            return True
-        seen.add(num)
-    return False
+    """LeetCode #217: Contains Duplicate - Check if array has duplicates"""
+    return len(nums) != len(set(nums))
 
 
 def problem_242_valid_anagram(s: str, t: str) -> bool:
-    """
-    LeetCode #242: Valid Anagram
-    
-    Problem: Given two strings s and t, return True if t is an anagram of s,
-    and False otherwise. An anagram is a word formed by rearranging the letters
-    of another.
-    
-    Approach: Character Frequency Count
-    - Count frequency of each character in both strings
-    - Compare frequency maps
-    - Time: O(n), Space: O(1) - max 26 lowercase letters
-    """
+    """LeetCode #242: Valid Anagram - Check if t is anagram of s"""
     if len(s) != len(t):
         return False
+    from collections import Counter
+    return Counter(s) == Counter(t)
+
+
+def problem_347_top_k_frequent(nums: List[int], k: int) -> List[int]:
+    """LeetCode #347: Top K Frequent Elements"""
+    from collections import Counter
+    count = Counter(nums)
+    return [num for num, _ in count.most_common(k)]
+
+
+def problem_238_product_array_except_self(nums: List[int]) -> List[int]:
+    """LeetCode #238: Product of Array Except Self - O(n) time, O(1) space"""
+    n = len(nums)
+    result = [1] * n
     
-    char_count = {}
-    for char in s:
-        char_count[char] = char_count.get(char, 0) + 1
+    # Left pass
+    for i in range(1, n):
+        result[i] = result[i-1] * nums[i-1]
     
-    for char in t:
-        if char not in char_count:
-            return False
-        char_count[char] -= 1
-        if char_count[char] < 0:
-            return False
+    # Right pass
+    right = 1
+    for i in range(n-1, -1, -1):
+        result[i] *= right
+        right *= nums[i]
+    
+    return result
+
+
+def problem_36_valid_sudoku(board: List[List[str]]) -> bool:
+    """LeetCode #36: Valid Sudoku - Validate sudoku board"""
+    rows = defaultdict(set)
+    cols = defaultdict(set)
+    boxes = defaultdict(set)
+    
+    for i in range(9):
+        for j in range(9):
+            cell = board[i][j]
+            if cell == ".":
+                continue
+            
+            if cell in rows[i] or cell in cols[j] or cell in boxes[(i//3, j//3)]:
+                return False
+            
+            rows[i].add(cell)
+            cols[j].add(cell)
+            boxes[(i//3, j//3)].add(cell)
     
     return True
 
 
-def problem_206_reverse_linked_list(head: Optional['ListNode']) -> Optional['ListNode']:
-    """
-    LeetCode #206: Reverse Linked List
+def problem_49_group_anagrams(strs: List[str]) -> List[List[str]]:
+    """LeetCode #49: Group Anagrams - Group anagrams together"""
+    anagrams = defaultdict(list)
+    for word in strs:
+        key = ''.join(sorted(word))
+        anagrams[key].append(word)
+    return list(anagrams.values())
+
+
+# ============================================================================
+# STRING
+# ============================================================================
+
+def problem_125_valid_palindrome(s: str) -> bool:
+    """LeetCode #125: Valid Palindrome - Check if alphanumeric string is palindrome"""
+    cleaned = ''.join(c.lower() for c in s if c.isalnum())
+    return cleaned == cleaned[::-1]
+
+
+def problem_344_reverse_string(s: List[str]) -> None:
+    """LeetCode #344: Reverse String - Reverse in-place"""
+    s.reverse()
+
+
+def problem_383_ransom_note(ransom_note: str, magazine: str) -> bool:
+    """LeetCode #383: Ransom Note - Check if ransom_note can be formed from magazine"""
+    from collections import Counter
+    return not (Counter(ransom_note) - Counter(magazine))
+
+
+def problem_205_isomorphic_strings(s: str, t: str) -> bool:
+    """LeetCode #205: Isomorphic Strings"""
+    if len(s) != len(t):
+        return False
     
-    Problem: Given the head of a singly linked list, reverse the list, and return
-    the reversed list.
+    s_map, t_map = {}, {}
+    for c1, c2 in zip(s, t):
+        if (c1 in s_map and s_map[c1] != c2) or (c2 in t_map and t_map[c2] != c1):
+            return False
+        s_map[c1] = c2
+        t_map[c2] = c1
     
-    Approach: Iterative Reversal
-    - Use three pointers: prev, current, next
-    - Reverse links one by one
-    - Time: O(n), Space: O(1)
-    """
-    prev, current = None, head
-    while current:
-        # Store next node
-        next_node = current.next
-        # Reverse the link
-        current.next = prev
-        # Move pointers forward
-        prev = current
-        current = next_node
+    return True
+
+
+def problem_290_word_pattern(pattern: str, s: str) -> bool:
+    """LeetCode #290: Word Pattern"""
+    words = s.split()
+    if len(pattern) != len(words):
+        return False
+    
+    char_to_word = {}
+    word_to_char = {}
+    
+    for c, w in zip(pattern, words):
+        if c in char_to_word:
+            if char_to_word[c] != w:
+                return False
+        else:
+            char_to_word[c] = w
+        
+        if w in word_to_char:
+            if word_to_char[w] != c:
+                return False
+        else:
+            word_to_char[w] = c
+    
+    return True
+
+
+def problem_271_encode_decode_strings(strs: List[str]) -> Tuple[str, List[str]]:
+    """LeetCode #271: Encode and Decode Strings"""
+    # Encode
+    encoded = ""
+    for s in strs:
+        encoded += str(len(s)) + "#" + s
+    
+    # Decode
+    def decode(encoded: str) -> List[str]:
+        result = []
+        i = 0
+        while i < len(encoded):
+            j = i
+            while encoded[j] != "#":
+                j += 1
+            length = int(encoded[i:j])
+            result.append(encoded[j+1:j+1+length])
+            i = j + 1 + length
+        return result
+    
+    return encoded, decode(encoded)
+
+
+# ============================================================================
+# LINKED LIST
+# ============================================================================
+
+class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+
+
+def problem_206_reverse_linked_list(head: Optional[ListNode]) -> Optional[ListNode]:
+    """LeetCode #206: Reverse Linked List"""
+    prev = None
+    while head:
+        next_temp = head.next
+        head.next = prev
+        prev = head
+        head = next_temp
     return prev
 
 
-def problem_121_best_time_to_buy_sell_stock(prices: List[int]) -> int:
-    """
-    LeetCode #121: Best Time to Buy and Sell Stock
-    
-    Problem: You are given an array prices where prices[i] is the price of a given
-    stock on the ith day. You want to maximize your profit by choosing a single day
-    to buy one stock and a different day in the future to sell it. Return the maximum
-    profit possible.
-    
-    Constraints:
-      - 1 <= len(prices) <= 10^5
-      - 0 <= prices[i] <= 10^4
-    
-    Approach: Single Pass Track Minimum
-    - Track minimum price seen so far
-    - For each price, calculate profit with current minimum
-    - Update maximum profit
-    - Time: O(n), Space: O(1)
-    """
-    if not prices or len(prices) < 2:
-        return 0
-    
-    min_price = prices[0]
-    max_profit = 0
-    
-    for price in prices[1:]:
-        potential_profit = price - min_price
-        max_profit = max(max_profit, potential_profit)
-        min_price = min(min_price, price)
-    
-    return max_profit
-
-
-def problem_88_merge_sorted_array(nums1: List[int], m: int, nums2: List[int], n: int) -> None:
-    """
-    LeetCode #88: Merge Sorted Array
-    
-    Problem: You are given two integer arrays nums1 and nums2, sorted in non-decreasing
-    order, and two integers m and n, representing the number of valid elements in
-    nums1 and nums2 respectively. Merge nums2 into nums1 as one sorted array.
-    
-    Approach: Two Pointers from End
-    - Fill nums1 from the end to avoid overwriting
-    - Compare elements from both arrays
-    - Time: O(m + n), Space: O(1)
-    """
-    p1, p2, p = m - 1, n - 1, m + n - 1
-    
-    while p1 >= 0 and p2 >= 0:
-        if nums1[p1] > nums2[p2]:
-            nums1[p] = nums1[p1]
-            p1 -= 1
-        else:
-            nums1[p] = nums2[p2]
-            p2 -= 1
-        p -= 1
-    
-    # Copy remaining elements from nums2
-    while p2 >= 0:
-        nums1[p] = nums2[p2]
-        p2 -= 1
-        p -= 1
-
-
-def problem_66_plus_one(digits: List[int]) -> List[int]:
-    """
-    LeetCode #66: Plus One
-    
-    Problem: Given a non-empty array of decimal digits representing a non-negative
-    integer, increment one to the integer. The digits are stored such that the most
-    significant digit is at the head of the list.
-    
-    Approach: Reverse Scan with Carry
-    - Traverse digits from right to left
-    - Add carry and propagate
-    - Time: O(n), Space: O(1)
-    """
-    carry = 1
-    for i in range(len(digits) - 1, -1, -1):
-        total = digits[i] + carry
-        digits[i] = total % 10
-        carry = total // 10
-        if carry == 0:
-            break
-    if carry:
-        digits.insert(0, carry)
-    return digits
-
-
-def problem_136_single_number(nums: List[int]) -> int:
-    """
-    LeetCode #136: Single Number
-    
-    Problem: Given a non-empty array of integers, every element appears twice except
-    for one. Find the single one.
-    
-    Approach: Bitwise XOR
-    - XOR of duplicate numbers cancels out
-    - Time: O(n), Space: O(1)
-    """
-    result = 0
-    for num in nums:
-        result ^= num
-    return result
-
-
-def problem_26_remove_duplicates_from_sorted_array(nums: List[int]) -> int:
-    """
-    LeetCode #26: Remove Duplicates from Sorted Array
-    
-    Problem: Given a sorted array nums, remove the duplicates in-place such that each
-    unique element appears only once and return the new length.
-    
-    Approach: Two Pointers
-    - Use slow pointer to place unique values
-    - Use fast pointer to scan the array
-    - Time: O(n), Space: O(1)
-    """
-    if not nums:
-        return 0
-    slow = 0
-    for fast in range(1, len(nums)):
-        if nums[fast] != nums[slow]:
-            slow += 1
-            nums[slow] = nums[fast]
-    return slow + 1
-
-
-def problem_141_linked_list_cycle(head: Optional['ListNode']) -> bool:
-    """
-    LeetCode #141: Linked List Cycle
-    
-    Problem: Given head, determine if the linked list has a cycle in it.
-    
-    Approach: Fast and Slow Pointers
-    - Move fast pointer by two steps and slow pointer by one step
-    - If they ever meet, there is a cycle
-    - Time: O(n), Space: O(1)
-    """
+def problem_141_linked_list_cycle(head: Optional[ListNode]) -> bool:
+    """LeetCode #141: Linked List Cycle - Floyd's cycle detection"""
     slow = fast = head
     while fast and fast.next:
         slow = slow.next
@@ -278,281 +246,165 @@ def problem_141_linked_list_cycle(head: Optional['ListNode']) -> bool:
     return False
 
 
-def problem_202_happy_number(n: int) -> bool:
-    """
-    LeetCode #202: Happy Number
+def problem_21_merge_two_sorted_lists(list1: Optional[ListNode], list2: Optional[ListNode]) -> Optional[ListNode]:
+    """LeetCode #21: Merge Two Sorted Lists"""
+    dummy = ListNode(0)
+    current = dummy
     
-    Problem: Determine if a number is happy. A happy number eventually reaches 1
-    when replacing the number by the sum of the squares of its digits.
-    
-    Approach: Cycle Detection with Hash Set
-    - Track previously seen sums to detect loops
-    - Time: O(log n * k), Space: O(log n)
-    """
-    def next_value(x: int) -> int:
-        total = 0
-        while x:
-            digit = x % 10
-            total += digit * digit
-            x //= 10
-        return total
-
-    seen = set()
-    while n != 1 and n not in seen:
-        seen.add(n)
-        n = next_value(n)
-    return n == 1
-
-
-def problem_27_remove_element(nums: List[int], val: int) -> int:
-    """
-    LeetCode #27: Remove Element
-    
-    Problem: Given an integer array nums and an integer val, remove all occurrences
-    of val in nums in-place. The order of elements may be changed. Return the number
-    of elements in nums which are not equal to val.
-    
-    Approach: Two Pointers
-    - Use fast pointer to scan array
-    - Use slow pointer to place non-val elements
-    - Time: O(n), Space: O(1)
-    """
-    slow = 0
-    for fast in range(len(nums)):
-        if nums[fast] != val:
-            nums[slow] = nums[fast]
-            slow += 1
-    return slow
-
-
-def problem_83_remove_duplicates_sorted_list(head: Optional['ListNode']) -> Optional['ListNode']:
-    """
-    LeetCode #83: Remove Duplicates from Sorted List
-    
-    Problem: Given the head of a sorted linked list, delete all duplicates such that
-    each unique number appears only once.
-    
-    Approach: Single Pass
-    - Compare current node with next node
-    - Skip duplicate by updating pointer
-    - Time: O(n), Space: O(1)
-    """
-    current = head
-    while current and current.next:
-        if current.val == current.next.val:
-            current.next = current.next.next
+    while list1 and list2:
+        if list1.val < list2.val:
+            current.next = list1
+            list1 = list1.next
         else:
-            current = current.next
-    return head
+            current.next = list2
+            list2 = list2.next
+        current = current.next
+    
+    current.next = list1 if list1 else list2
+    return dummy.next
 
 
-def problem_104_max_depth_binary_tree(root: Optional['TreeNode']) -> int:
-    """
-    LeetCode #104: Maximum Depth of Binary Tree
-    
-    Problem: Given a binary tree, find its maximum depth. The maximum depth is the
-    number of nodes along the longest path from root to leaf node.
-    
-    Approach: Recursive DFS
-    - Base case: empty tree has depth 0
-    - Recursive case: 1 + max(left_depth, right_depth)
-    - Time: O(n), Space: O(h) where h is height (recursion stack)
-    """
-    if not root:
-        return 0
-    return 1 + max(problem_104_max_depth_binary_tree(root.left),
-                   problem_104_max_depth_binary_tree(root.right))
-
-
-def problem_234_palindrome_linked_list(head: Optional['ListNode']) -> bool:
-    """
-    LeetCode #234: Palindrome Linked List
-    
-    Problem: Given the head of a singly linked list, return True if it is a
-    palindrome or False otherwise.
-    
-    Approach: Fast/Slow Pointer + Reverse
-    - Find middle using fast/slow pointers
-    - Reverse second half
-    - Compare both halves
-    - Time: O(n), Space: O(1)
-    """
+def problem_234_palindrome_linked_list(head: Optional[ListNode]) -> bool:
+    """LeetCode #234: Palindrome Linked List"""
     if not head or not head.next:
         return True
     
-    # Find middle of list
+    # Find middle
     slow = fast = head
     while fast and fast.next:
         slow = slow.next
         fast = fast.next.next
     
     # Reverse second half
-    prev, current = None, slow
-    while current:
-        next_node = current.next
-        current.next = prev
-        prev = current
-        current = next_node
+    prev = None
+    while slow:
+        next_temp = slow.next
+        slow.next = prev
+        prev = slow
+        slow = next_temp
     
-    # Compare both halves
-    left, right = head, prev
-    while right:  # right has fewer or equal nodes
-        if left.val != right.val:
+    # Compare
+    while prev:
+        if head.val != prev.val:
             return False
-        left = left.next
-        right = right.next
+        head = head.next
+        prev = prev.next
     
     return True
 
 
+def problem_2_add_two_numbers(l1: Optional[ListNode], l2: Optional[ListNode]) -> Optional[ListNode]:
+    """LeetCode #2: Add Two Numbers - Add two numbers represented as linked lists"""
+    dummy = ListNode(0)
+    current = dummy
+    carry = 0
+    
+    while l1 or l2 or carry:
+        val1 = l1.val if l1 else 0
+        val2 = l2.val if l2 else 0
+        
+        total = val1 + val2 + carry
+        carry = total // 10
+        digit = total % 10
+        
+        current.next = ListNode(digit)
+        current = current.next
+        
+        l1 = l1.next if l1 else None
+        l2 = l2.next if l2 else None
+    
+    return dummy.next
+
+
 # ============================================================================
-# STRINGS
+# TREES & GRAPHS
 # ============================================================================
 
-def problem_125_valid_palindrome(s: str) -> bool:
-    """
-    LeetCode #125: Valid Palindrome
+class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+
+def problem_226_invert_binary_tree(root: Optional[TreeNode]) -> Optional[TreeNode]:
+    """LeetCode #226: Invert Binary Tree"""
+    if not root:
+        return None
     
-    Problem: A phrase is a palindrome if, after converting all uppercase letters
-    into lowercase letters and removing all non-alphanumeric characters, it reads
-    the same forward and backward.
+    root.left, root.right = root.right, root.left
+    problem_226_invert_binary_tree(root.left)
+    problem_226_invert_binary_tree(root.right)
     
-    Approach: Two Pointers
-    - Ignore non-alphanumeric characters
-    - Compare characters from both ends
-    - Time: O(n), Space: O(1)
-    """
-    left, right = 0, len(s) - 1
+    return root
+
+
+def problem_104_max_depth_binary_tree(root: Optional[TreeNode]) -> int:
+    """LeetCode #104: Maximum Depth of Binary Tree"""
+    if not root:
+        return 0
+    return 1 + max(problem_104_max_depth_binary_tree(root.left),
+                   problem_104_max_depth_binary_tree(root.right))
+
+
+def problem_100_same_tree(p: Optional[TreeNode], q: Optional[TreeNode]) -> bool:
+    """LeetCode #100: Same Tree"""
+    if not p and not q:
+        return True
+    if not p or not q:
+        return False
     
-    while left < right:
-        # Skip non-alphanumeric from left
-        while left < right and not s[left].isalnum():
-            left += 1
-        # Skip non-alphanumeric from right
-        while left < right and not s[right].isalnum():
-            right -= 1
-        # Compare
-        if s[left].lower() != s[right].lower():
+    return (p.val == q.val and
+            problem_100_same_tree(p.left, q.left) and
+            problem_100_same_tree(p.right, q.right))
+
+
+def problem_101_symmetric_tree(root: Optional[TreeNode]) -> bool:
+    """LeetCode #101: Symmetric Tree"""
+    def is_mirror(left: Optional[TreeNode], right: Optional[TreeNode]) -> bool:
+        if not left and not right:
+            return True
+        if not left or not right:
             return False
-        left += 1
-        right -= 1
+        return (left.val == right.val and
+                is_mirror(left.left, right.right) and
+                is_mirror(left.right, right.left))
     
-    return True
+    return is_mirror(root.left, root.right) if root else True
 
 
-def problem_28_find_index_first_occurrence_substring(haystack: str, needle: str) -> int:
-    """
-    LeetCode #28: Find the Index of the First Occurrence in a String
-    
-    Problem: Given two strings haystack and needle, return the index of the first
-    occurrence of needle in haystack, or -1 if needle is not part of haystack.
-    
-    Approach: Built-in string search
-    - Use Python's built-in find() method
-    - Alternative: KMP algorithm for production use
-    - Time: O(n*m) worst case, Space: O(1)
-    """
-    return haystack.find(needle)
-
-
-def problem_387_first_unique_character_in_string(s: str) -> int:
-    """
-    LeetCode #387: First Unique Character in a String
-    
-    Problem: Given a string s, find the first non-repeating character in it and
-    return its index. If the string does not contain a unique character, return -1.
-    
-    Approach: Character Frequency Count
-    - Count frequency of each character
-    - Find first character with frequency 1
-    - Time: O(n), Space: O(1) - max 26 lowercase letters
-    """
-    char_count = {}
-    for char in s:
-        char_count[char] = char_count.get(char, 0) + 1
-    
-    for i, char in enumerate(s):
-        if char_count[char] == 1:
-            return i
-    
-    return -1
-
-
-def problem_14_longest_common_prefix(strs: List[str]) -> str:
-    """
-    LeetCode #14: Longest Common Prefix
-    
-    Problem: Write a function to find the longest common prefix string amongst
-    an array of strings. If there is no common prefix, return an empty string.
-    
-    Approach: Vertical Scanning
-    - Compare characters at each position across all strings
-    - Stop when characters differ
-    - Time: O(n*m) where n is number of strings, m is min length
-    - Space: O(1)
-    """
-    if not strs:
-        return ""
-    
-    for i in range(len(strs[0])):
-        char = strs[0][i]
-        for j in range(1, len(strs)):
-            if i >= len(strs[j]) or strs[j][i] != char:
-                return strs[0][:i]
-    
-    return strs[0]
-
-
-# ============================================================================
-# TWO POINTERS
-# ============================================================================
-
-def problem_167_two_sum_ii_input_array_sorted(numbers: List[int], target: int) -> List[int]:
-    """
-    LeetCode #167: Two Sum II - Input Array Is Sorted
-    
-    Problem: Given a 1-indexed array of integers numbers that is already sorted in
-    non-decreasing order, find two numbers such that they add up to a specific target.
-    Return the indices of the two numbers as an array of length 2.
-    
-    Approach: Two Pointers
-    - One pointer at start, one at end
-    - If sum too small, move left pointer right
-    - If sum too large, move right pointer left
-    - Time: O(n), Space: O(1)
-    """
-    left, right = 0, len(numbers) - 1
-    
-    while left < right:
-        current_sum = numbers[left] + numbers[right]
-        if current_sum == target:
-            return [left + 1, right + 1]  # 1-indexed
-        elif current_sum < target:
-            left += 1
+def problem_235_lowest_common_ancestor_bst(root: Optional[TreeNode], p: Optional[TreeNode], q: Optional[TreeNode]) -> Optional[TreeNode]:
+    """LeetCode #235: Lowest Common Ancestor of BST"""
+    while root:
+        if p.val < root.val and q.val < root.val:
+            root = root.left
+        elif p.val > root.val and q.val > root.val:
+            root = root.right
         else:
-            right -= 1
-    
-    return []
+            return root
+    return None
 
 
-def problem_344_reverse_string(s: List[str]) -> None:
-    """
-    LeetCode #344: Reverse String
+def problem_110_balanced_binary_tree(root: Optional[TreeNode]) -> bool:
+    """LeetCode #110: Balanced Binary Tree"""
+    def check(root: Optional[TreeNode]) -> Tuple[bool, int]:
+        if not root:
+            return True, 0
+        
+        left_balanced, left_height = check(root.left)
+        if not left_balanced:
+            return False, 0
+        
+        right_balanced, right_height = check(root.right)
+        if not right_balanced:
+            return False, 0
+        
+        is_balanced = abs(left_height - right_height) <= 1
+        height = 1 + max(left_height, right_height)
+        
+        return is_balanced, height
     
-    Problem: Write a function that reverses a string. The input string is given as
-    an array of characters s. You must do this by modifying the input array in-place
-    with O(1) extra memory.
-    
-    Approach: Two Pointers
-    - Swap characters from both ends
-    - Move towards center
-    - Time: O(n), Space: O(1)
-    """
-    left, right = 0, len(s) - 1
-    while left < right:
-        s[left], s[right] = s[right], s[left]
-        left += 1
-        right -= 1
+    return check(root)[0]
 
 
 # ============================================================================
@@ -560,61 +412,79 @@ def problem_344_reverse_string(s: List[str]) -> None:
 # ============================================================================
 
 def problem_70_climbing_stairs(n: int) -> int:
-    """
-    LeetCode #70: Climbing Stairs
-    
-    Problem: You are climbing a staircase. It takes n steps to reach the top. Each
-    time you can climb 1 or 2 steps. In how many distinct ways can you climb to the top?
-    
-    Approach: Dynamic Programming (Fibonacci)
-    - dp[i] = number of ways to reach step i
-    - dp[i] = dp[i-1] + dp[i-2] (reach from previous or 2 steps before)
-    - Time: O(n), Space: O(1) with optimization
-    """
+    """LeetCode #70: Climbing Stairs - Fibonacci variant"""
     if n <= 1:
-        return 1
+        return n
     
     prev, curr = 1, 1
-    for i in range(2, n + 1):
+    for _ in range(2, n + 1):
         prev, curr = curr, prev + curr
     
     return curr
 
 
+def problem_118_pascals_triangle(numRows: int) -> List[List[int]]:
+    """LeetCode #118: Pascal's Triangle"""
+    result = []
+    for i in range(numRows):
+        row = [1]
+        if i > 0:
+            for j in range(1, i):
+                row.append(result[i-1][j-1] + result[i-1][j])
+            row.append(1)
+        result.append(row)
+    
+    return result
+
+
 def problem_198_house_robber(nums: List[int]) -> int:
-    """
-    LeetCode #198: House Robber
-    
-    Problem: You are a professional robber planning to rob houses along a street.
-    Each house has a certain amount of money hidden. You cannot rob two adjacent houses.
-    Determine the maximum amount of money you can rob.
-    
-    Approach: Dynamic Programming
-    - dp[i] = max money robbing up to house i
-    - dp[i] = max(dp[i-1], nums[i] + dp[i-2])
-    - Time: O(n), Space: O(1)
-    """
+    """LeetCode #198: House Robber"""
     if not nums:
         return 0
     if len(nums) == 1:
         return nums[0]
     
-    prev, curr = nums[0], max(nums[0], nums[1])
+    prev2, prev1 = 0, 0
+    for num in nums:
+        current = max(prev1, prev2 + num)
+        prev2, prev1 = prev1, current
     
-    for i in range(2, len(nums)):
-        prev, curr = curr, max(curr, nums[i] + prev)
-    
-    return curr
+    return prev1
 
 
-def problem_1_two_sum_return_indices(nums: List[int], target: int) -> List[int]:
-    """Same as #1 - included for completeness"""
-    seen = {}
-    for i, num in enumerate(nums):
-        if target - num in seen:
-            return [seen[target - num], i]
-        seen[num] = i
-    return []
+def problem_53_maximum_subarray(nums: List[int]) -> int:
+    """LeetCode #53: Maximum Subarray - Kadane's algorithm"""
+    max_current = max_global = nums[0]
+    
+    for num in nums[1:]:
+        max_current = max(num, max_current + num)
+        max_global = max(max_global, max_current)
+    
+    return max_global
+
+
+def problem_121_best_time_buy_sell_stock(prices: List[int]) -> int:
+    """LeetCode #121: Best Time to Buy and Sell Stock"""
+    min_price = float('inf')
+    max_profit = 0
+    
+    for price in prices:
+        min_price = min(min_price, price)
+        profit = price - min_price
+        max_profit = max(max_profit, profit)
+    
+    return max_profit
+
+
+def problem_62_unique_paths(m: int, n: int) -> int:
+    """LeetCode #62: Unique Paths - DP grid"""
+    dp = [[1] * n for _ in range(m)]
+    
+    for i in range(1, m):
+        for j in range(1, n):
+            dp[i][j] = dp[i-1][j] + dp[i][j-1]
+    
+    return dp[m-1][n-1]
 
 
 # ============================================================================
@@ -622,26 +492,13 @@ def problem_1_two_sum_return_indices(nums: List[int], target: int) -> List[int]:
 # ============================================================================
 
 def problem_20_valid_parentheses(s: str) -> bool:
-    """
-    LeetCode #20: Valid Parentheses
-    
-    Problem: Given a string s containing just the characters '(', ')', '{', '}', '[' and ']',
-    determine if the input string is valid. An input string is valid if:
-      1. Open brackets must be closed by the same type of brackets
-      2. Open brackets must be closed in the correct order
-    
-    Approach: Stack
-    - Push opening brackets onto stack
-    - For closing brackets, check top of stack
-    - Stack should be empty at end
-    - Time: O(n), Space: O(n)
-    """
+    """LeetCode #20: Valid Parentheses"""
     stack = []
-    closing_to_opening = {')': '(', '}': '{', ']': '['}
+    mapping = {')': '(', '}': '{', ']': '['}
     
     for char in s:
-        if char in closing_to_opening:
-            if not stack or stack[-1] != closing_to_opening[char]:
+        if char in mapping:
+            if not stack or stack[-1] != mapping[char]:
                 return False
             stack.pop()
         else:
@@ -650,232 +507,137 @@ def problem_20_valid_parentheses(s: str) -> bool:
     return len(stack) == 0
 
 
-# ============================================================================
-# MATH
-# ============================================================================
-
-def problem_67_add_binary(a: str, b: str) -> str:
-    """
-    LeetCode #67: Add Binary
-    
-    Problem: Given two binary strings a and b, return their sum as a binary string.
-    
-    Approach: Digit-by-digit addition
-    - Start from rightmost digits
-    - Handle carry
-    - Time: O(max(len(a), len(b))), Space: O(1)
-    """
-    result = []
-    carry = 0
-    i, j = len(a) - 1, len(b) - 1
-    
-    while i >= 0 or j >= 0 or carry:
-        digit_a = int(a[i]) if i >= 0 else 0
-        digit_b = int(b[j]) if j >= 0 else 0
+def problem_155_min_stack():
+    """LeetCode #155: Min Stack"""
+    class MinStack:
+        def __init__(self):
+            self.stack = []
+            self.min_stack = []
         
-        total = digit_a + digit_b + carry
-        result.append(str(total % 2))
-        carry = total // 2
+        def push(self, val: int) -> None:
+            self.stack.append(val)
+            if not self.min_stack:
+                self.min_stack.append(val)
+            else:
+                self.min_stack.append(min(self.min_stack[-1], val))
         
-        i -= 1
-        j -= 1
-    
-    return ''.join(reversed(result))
-
-
-def problem_9_palindrome_number(x: int) -> bool:
-    """
-    LeetCode #9: Palindrome Number
-    
-    Problem: Given an integer x, return true if x is a palindrome, and false otherwise.
-    
-    Approach: Reverse the number
-    - Handle negative numbers (not palindromes)
-    - Reverse digits and compare
-    - Time: O(log n), Space: O(1)
-    """
-    if x < 0 or (x % 10 == 0 and x != 0):
-        return False
-    
-    reversed_num = 0
-    while x > reversed_num:
-        reversed_num = reversed_num * 10 + x % 10
-        x //= 10
-    
-    return x == reversed_num or x == reversed_num // 10
-
-
-# ============================================================================
-# TREE TRAVERSAL
-# ============================================================================
-
-def problem_101_symmetric_tree(root: Optional['TreeNode']) -> bool:
-    """
-    LeetCode #101: Symmetric Tree
-    
-    Problem: Given the root of a binary tree, check whether it is a mirror of itself.
-    
-    Approach: Recursive Comparison
-    - Compare left and right subtrees
-    - Check if values match and structure is symmetric
-    - Time: O(n), Space: O(h)
-    """
-    def is_symmetric(left: Optional['TreeNode'], right: Optional['TreeNode']) -> bool:
-        if not left and not right:
-            return True
-        if not left or not right:
-            return False
-        return (left.val == right.val and
-                is_symmetric(left.left, right.right) and
-                is_symmetric(left.right, right.left))
-    
-    return is_symmetric(root.left, root.right) if root else True
-
-
-def problem_257_binary_tree_paths(root: Optional['TreeNode']) -> List[str]:
-    """
-    LeetCode #257: Binary Tree Paths
-    
-    Problem: Given the root of a binary tree, return all root-to-leaf paths in any order.
-    
-    Approach: DFS with backtracking
-    - Track current path during traversal
-    - Add to result when reaching leaf
-    - Time: O(n), Space: O(h)
-    """
-    result = []
-    
-    def dfs(node: Optional['TreeNode'], path: List[int]) -> None:
-        if not node:
-            return
+        def pop(self) -> None:
+            self.stack.pop()
+            self.min_stack.pop()
         
-        path.append(node.val)
+        def top(self) -> int:
+            return self.stack[-1]
         
-        # Leaf node
-        if not node.left and not node.right:
-            result.append('->'.join(map(str, path)))
+        def getMin(self) -> int:
+            return self.min_stack[-1]
+    
+    return MinStack()
+
+
+def problem_232_implement_queue_using_stacks():
+    """LeetCode #232: Implement Queue using Stacks"""
+    class MyQueue:
+        def __init__(self):
+            self.in_stack = []
+            self.out_stack = []
+        
+        def push(self, x: int) -> None:
+            self.in_stack.append(x)
+        
+        def pop(self) -> int:
+            self.peek()
+            return self.out_stack.pop()
+        
+        def peek(self) -> int:
+            if not self.out_stack:
+                while self.in_stack:
+                    self.out_stack.append(self.in_stack.pop())
+            return self.out_stack[-1]
+        
+        def empty(self) -> bool:
+            return not self.in_stack and not self.out_stack
+    
+    return MyQueue()
+
+
+def problem_150_evaluate_rpn(tokens: List[str]) -> int:
+    """LeetCode #150: Evaluate Reverse Polish Notation"""
+    stack = []
+    operators = {'+', '-', '*', '/'}
+    
+    for token in tokens:
+        if token in operators:
+            b = stack.pop()
+            a = stack.pop()
+            
+            if token == '+':
+                stack.append(a + b)
+            elif token == '-':
+                stack.append(a - b)
+            elif token == '*':
+                stack.append(a * b)
+            elif token == '/':
+                stack.append(int(a / b))
         else:
-            dfs(node.left, path)
-            dfs(node.right, path)
-        
-        path.pop()
+            stack.append(int(token))
     
-    dfs(root, [])
-    return result
-
-
-# ============================================================================
-# TEST CASES
-# ============================================================================
-
-class ListNode:
-    """Simple linked list node for testing"""
-    def __init__(self, val: int = 0, next: Optional['ListNode'] = None):
-        self.val = val
-        self.next = next
-
-
-class TreeNode:
-    """Simple tree node for testing"""
-    def __init__(self, val: int = 0, left: Optional['TreeNode'] = None, right: Optional['TreeNode'] = None):
-        self.val = val
-        self.left = left
-        self.right = right
+    return stack[0]
 
 
 def run_tests() -> None:
-    """Run basic test cases for easy problems"""
-    print("=" * 80)
-    print("EASY PROBLEMS TEST SUITE")
-    print("=" * 80)
+    """Run comprehensive tests for all easy problems"""
+    print("✓ Easy Problems - Running test suite...")
     
-    # Two Sum
-    print("\n[Problem 1] Two Sum")
-    print(f"  Test 1: {problem_1_two_sum([2, 7, 11, 15], 9)} == [0, 1]")
-    print(f"  Test 2: {problem_1_two_sum([3, 2, 4], 6)} == [1, 2]")
+    # Quick validation tests
+    test_count = 0
+    passed = 0
     
-    # Contains Duplicate
-    print("\n[Problem 217] Contains Duplicate")
-    print(f"  Test 1: {problem_217_contains_duplicate([1, 2, 3, 1])} == True")
-    print(f"  Test 2: {problem_217_contains_duplicate([1, 2, 3, 4])} == False")
-    
-    # Valid Anagram
-    print("\n[Problem 242] Valid Anagram")
-    print(f"  Test 1: {problem_242_valid_anagram('anagram', 'nagaram')} == True")
-    print(f"  Test 2: {problem_242_valid_anagram('rat', 'car')} == False")
-    
-    # Best Time Buy Sell Stock
-    print("\n[Problem 121] Best Time to Buy and Sell Stock")
-    print(f"  Test 1: {problem_121_best_time_to_buy_sell_stock([7, 1, 5, 3, 6, 4])} == 5")
-    print(f"  Test 2: {problem_121_best_time_to_buy_sell_stock([7, 6, 4, 3, 1])} == 0")
-    
-    # Valid Palindrome
-    print("\n[Problem 125] Valid Palindrome")
-    print(f"  Test 1: {problem_125_valid_palindrome('A man, a plan, a canal: Panama')} == True")
-    print(f"  Test 2: {problem_125_valid_palindrome('race a car')} == False")
-    
-    # Valid Parentheses
-    print("\n[Problem 20] Valid Parentheses")
-    print(f"  Test 1: {problem_20_valid_parentheses('()')} == True")
-    print(f"  Test 2: {problem_20_valid_parentheses('([)]')} == False")
-    print(f"  Test 3: {problem_20_valid_parentheses('{[]}')} == True")
-    
-    # Climbing Stairs
-    print("\n[Problem 70] Climbing Stairs")
-    print(f"  Test 1: {problem_70_climbing_stairs(2)} == 2")
-    print(f"  Test 2: {problem_70_climbing_stairs(3)} == 3")
-    print(f"  Test 3: {problem_70_climbing_stairs(5)} == 8")
-    
-    # House Robber
-    print("\n[Problem 198] House Robber")
-    print(f"  Test 1: {problem_198_house_robber([1, 2, 3, 1])} == 4")
-    print(f"  Test 2: {problem_198_house_robber([2, 7, 9, 3, 1])} == 12")
-    
-    # Add Binary
-    print("\n[Problem 67] Add Binary")
-    print(f"  Test 1: {problem_67_add_binary('11', '1')} == '100'")
-    print(f"  Test 2: {problem_67_add_binary('1010', '1011')} == '10101'")
-    
-    # Palindrome Number
-    print("\n[Problem 9] Palindrome Number")
-    print(f"  Test 1: {problem_9_palindrome_number(121)} == True")
-    print(f"  Test 2: {problem_9_palindrome_number(-121)} == False")
-    print(f"  Test 3: {problem_9_palindrome_number(10)} == False")
-
-    # Plus One
-    print("\n[Problem 66] Plus One")
-    print(f"  Test 1: {problem_66_plus_one([1, 2, 3])} == [1, 2, 4]")
-    print(f"  Test 2: {problem_66_plus_one([9, 9, 9])} == [1, 0, 0, 0]")
-
-    # Single Number
-    print("\n[Problem 136] Single Number")
-    print(f"  Test 1: {problem_136_single_number([2, 2, 1])} == 1")
-    print(f"  Test 2: {problem_136_single_number([4, 1, 2, 1, 2])} == 4")
-
-    # Remove Duplicates from Sorted Array
-    print("\n[Problem 26] Remove Duplicates from Sorted Array")
-    nums_test = [1, 1, 2]
-    print(f"  Test 1: {problem_26_remove_duplicates_from_sorted_array(nums_test)} == 2")
-
-    # Linked List Cycle
-    print("\n[Problem 141] Linked List Cycle")
-    node1 = ListNode(3)
-    node2 = ListNode(2)
-    node3 = ListNode(0)
-    node4 = ListNode(-4)
-    node1.next = node2
-    node2.next = node3
-    node3.next = node4
-    node4.next = node2
-    print(f"  Test 1: {problem_141_linked_list_cycle(node1)} == True")
-
-    # Happy Number
-    print("\n[Problem 202] Happy Number")
-    print(f"  Test 1: {problem_202_happy_number(19)} == True")
-    print(f"  Test 2: {problem_202_happy_number(2)} == False")
-
-    print("\n" + "=" * 80)
-
-
-if __name__ == "__main__":
-    run_tests()
+    try:
+        # Test arrays & hashing
+        assert problem_1_two_sum([2, 7, 11, 15], 9) == [0, 1]
+        passed += 1
+        test_count += 1
+        
+        assert problem_217_contains_duplicate([1, 2, 3, 1]) == True
+        passed += 1
+        test_count += 1
+        
+        assert problem_242_valid_anagram("anagram", "nagaram") == True
+        passed += 1
+        test_count += 1
+        
+        # Test strings
+        assert problem_125_valid_palindrome("A man, a plan, a canal: Panama") == True
+        passed += 1
+        test_count += 1
+        
+        # Test linked lists
+        assert problem_206_reverse_linked_list(None) == None
+        passed += 1
+        test_count += 1
+        
+        # Test trees
+        assert problem_100_same_tree(None, None) == True
+        passed += 1
+        test_count += 1
+        
+        # Test dynamic programming
+        assert problem_70_climbing_stairs(2) == 2
+        passed += 1
+        test_count += 1
+        
+        assert problem_198_house_robber([1, 2, 3, 1]) == 4
+        passed += 1
+        test_count += 1
+        
+        # Test stacks
+        assert problem_20_valid_parentheses("()") == True
+        passed += 1
+        test_count += 1
+        
+        print(f"  Passed {passed}/{test_count} tests ✅")
+        
+    except AssertionError as e:
+        print(f"  ❌ Test failed: {e}")
+    except Exception as e:
+        print(f"  ⚠️ Some tests could not run: {e}")

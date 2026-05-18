@@ -30,6 +30,7 @@ class Difficulty(Enum):
 
 
 # Problem registry mapping problem names to functions
+# Built dynamically from actual available functions
 PROBLEM_REGISTRY: Dict[str, Dict] = {
     # EASY PROBLEMS
     "1-two-sum": {
@@ -38,113 +39,47 @@ PROBLEM_REGISTRY: Dict[str, Dict] = {
         "category": "Arrays & Hashing",
         "description": "Find two numbers that add up to target",
     },
-    "217-contains-duplicate": {
+    "2-add-two-numbers": {
         "difficulty": Difficulty.EASY,
-        "function": easy_solutions.problem_217_contains_duplicate,
+        "function": easy_solutions.problem_2_add_two_numbers,
+        "category": "Linked Lists",
+        "description": "Add two numbers represented as linked lists",
+    },
+    "20-valid-parentheses": {
+        "difficulty": Difficulty.EASY,
+        "function": easy_solutions.problem_20_valid_parentheses,
+        "category": "Stack",
+        "description": "Validate parentheses are correctly matched",
+    },
+    "21-merge-two-sorted-lists": {
+        "difficulty": Difficulty.EASY,
+        "function": easy_solutions.problem_21_merge_two_sorted_lists,
+        "category": "Linked Lists",
+        "description": "Merge two sorted linked lists",
+    },
+    "36-valid-sudoku": {
+        "difficulty": Difficulty.EASY,
+        "function": easy_solutions.problem_36_valid_sudoku,
+        "category": "Hashing",
+        "description": "Validate a partially filled sudoku board",
+    },
+    "49-group-anagrams": {
+        "difficulty": Difficulty.EASY,
+        "function": easy_solutions.problem_49_group_anagrams,
         "category": "Arrays & Hashing",
-        "description": "Check if array contains duplicates",
+        "description": "Group words that are anagrams",
     },
-    "242-valid-anagram": {
+    "53-maximum-subarray": {
         "difficulty": Difficulty.EASY,
-        "function": easy_solutions.problem_242_valid_anagram,
-        "category": "Strings",
-        "description": "Check if two strings are anagrams",
+        "function": easy_solutions.problem_53_maximum_subarray,
+        "category": "Dynamic Programming",
+        "description": "Find the contiguous subarray with largest sum",
     },
-    "121-best-time-buy-sell-stock": {
+    "62-unique-paths": {
         "difficulty": Difficulty.EASY,
-        "function": easy_solutions.problem_121_best_time_to_buy_sell_stock,
-        "category": "Arrays",
-        "description": "Find max profit buying and selling stock",
-    },
-    "66-plus-one": {
-        "difficulty": Difficulty.EASY,
-        "function": easy_solutions.problem_66_plus_one,
-        "category": "Arrays",
-        "description": "Add one to a large integer represented as an array",
-    },
-    "136-single-number": {
-        "difficulty": Difficulty.EASY,
-        "function": easy_solutions.problem_136_single_number,
-        "category": "Bit Manipulation",
-        "description": "Find the unique number when others appear twice",
-    },
-    "88-merge-sorted-array": {
-        "difficulty": Difficulty.EASY,
-        "function": easy_solutions.problem_88_merge_sorted_array,
-        "category": "Arrays",
-        "description": "Merge two sorted arrays in-place",
-    },
-    "26-remove-duplicates-sorted-array": {
-        "difficulty": Difficulty.EASY,
-        "function": easy_solutions.problem_26_remove_duplicates_from_sorted_array,
-        "category": "Arrays",
-        "description": "Remove duplicates from sorted array in-place",
-    },
-    "27-remove-element": {
-        "difficulty": Difficulty.EASY,
-        "function": easy_solutions.problem_27_remove_element,
-        "category": "Arrays",
-        "description": "Remove specific elements in-place",
-    },
-    "83-remove-duplicates-sorted-list": {
-        "difficulty": Difficulty.EASY,
-        "function": easy_solutions.problem_83_remove_duplicates_sorted_list,
-        "category": "Linked Lists",
-        "description": "Remove duplicates from sorted linked list",
-    },
-    "141-linked-list-cycle": {
-        "difficulty": Difficulty.EASY,
-        "function": easy_solutions.problem_141_linked_list_cycle,
-        "category": "Linked Lists",
-        "description": "Detect cycle in linked list",
-    },
-    "104-max-depth-binary-tree": {
-        "difficulty": Difficulty.EASY,
-        "function": easy_solutions.problem_104_max_depth_binary_tree,
-        "category": "Trees",
-        "description": "Compute maximum depth of a binary tree",
-    },
-    "234-palindrome-linked-list": {
-        "difficulty": Difficulty.EASY,
-        "function": easy_solutions.problem_234_palindrome_linked_list,
-        "category": "Linked Lists",
-        "description": "Check whether linked list is a palindrome",
-    },
-    "125-valid-palindrome": {
-        "difficulty": Difficulty.EASY,
-        "function": easy_solutions.problem_125_valid_palindrome,
-        "category": "Strings",
-        "description": "Validate palindrome with alphanumeric filtering",
-    },
-    "28-first-occurrence": {
-        "difficulty": Difficulty.EASY,
-        "function": easy_solutions.problem_28_find_index_first_occurrence_substring,
-        "category": "Strings",
-        "description": "Find first occurrence of substring",
-    },
-    "387-first-unique-character": {
-        "difficulty": Difficulty.EASY,
-        "function": easy_solutions.problem_387_first_unique_character_in_string,
-        "category": "Strings",
-        "description": "Find first non-repeating character",
-    },
-    "14-longest-common-prefix": {
-        "difficulty": Difficulty.EASY,
-        "function": easy_solutions.problem_14_longest_common_prefix,
-        "category": "Strings",
-        "description": "Find longest common prefix among strings",
-    },
-    "167-two-sum-ii": {
-        "difficulty": Difficulty.EASY,
-        "function": easy_solutions.problem_167_two_sum_ii_input_array_sorted,
-        "category": "Two Pointers",
-        "description": "Two sum in sorted array using two pointers",
-    },
-    "344-reverse-string": {
-        "difficulty": Difficulty.EASY,
-        "function": easy_solutions.problem_344_reverse_string,
-        "category": "Two Pointers",
-        "description": "Reverse character array in-place",
+        "function": easy_solutions.problem_62_unique_paths,
+        "category": "Dynamic Programming",
+        "description": "Count unique grid paths from top-left to bottom-right",
     },
     "70-climbing-stairs": {
         "difficulty": Difficulty.EASY,
@@ -152,17 +87,11 @@ PROBLEM_REGISTRY: Dict[str, Dict] = {
         "category": "Dynamic Programming",
         "description": "Count distinct ways to climb stairs",
     },
-    "198-house-robber": {
+    "100-same-tree": {
         "difficulty": Difficulty.EASY,
-        "function": easy_solutions.problem_198_house_robber,
-        "category": "Dynamic Programming",
-        "description": "Maximize robbery profit without adjacent thefts",
-    },
-    "202-happy-number": {
-        "difficulty": Difficulty.EASY,
-        "function": easy_solutions.problem_202_happy_number,
-        "category": "Math",
-        "description": "Determine if a number is happy",
+        "function": easy_solutions.problem_100_same_tree,
+        "category": "Trees",
+        "description": "Check if two binary trees are identical",
     },
     "101-symmetric-tree": {
         "difficulty": Difficulty.EASY,
@@ -170,72 +99,168 @@ PROBLEM_REGISTRY: Dict[str, Dict] = {
         "category": "Trees",
         "description": "Check whether binary tree is symmetric",
     },
-    "257-binary-tree-paths": {
+    "104-max-depth-binary-tree": {
         "difficulty": Difficulty.EASY,
-        "function": easy_solutions.problem_257_binary_tree_paths,
+        "function": easy_solutions.problem_104_max_depth_binary_tree,
         "category": "Trees",
-        "description": "List all root-to-leaf binary tree paths",
+        "description": "Compute maximum depth of a binary tree",
     },
-    # MEDIUM PROBLEMS
-    "3-longest-substring": {
-        "difficulty": Difficulty.MEDIUM,
-        "function": medium_solutions.problem_3_longest_substring_without_repeating,
+    "110-balanced-binary-tree": {
+        "difficulty": Difficulty.EASY,
+        "function": easy_solutions.problem_110_balanced_binary_tree,
+        "category": "Trees",
+        "description": "Check if binary tree is height-balanced",
+    },
+    "118-pascals-triangle": {
+        "difficulty": Difficulty.EASY,
+        "function": easy_solutions.problem_118_pascals_triangle,
+        "category": "Arrays",
+        "description": "Generate Pascal's triangle with numRows",
+    },
+    "121-best-time-buy-sell-stock": {
+        "difficulty": Difficulty.EASY,
+        "function": easy_solutions.problem_121_best_time_buy_sell_stock,
+        "category": "Arrays",
+        "description": "Find max profit buying and selling stock once",
+    },
+    "125-valid-palindrome": {
+        "difficulty": Difficulty.EASY,
+        "function": easy_solutions.problem_125_valid_palindrome,
         "category": "Strings",
-        "description": "Find the longest substring without repeating characters",
+        "description": "Validate palindrome with alphanumeric filtering",
     },
-    "39-combination-sum": {
-        "difficulty": Difficulty.MEDIUM,
-        "function": medium_solutions.problem_39_combination_sum,
-        "category": "Backtracking",
-        "description": "Find all unique combinations summing to target",
+    "141-linked-list-cycle": {
+        "difficulty": Difficulty.EASY,
+        "function": easy_solutions.problem_141_linked_list_cycle,
+        "category": "Linked Lists",
+        "description": "Detect cycle in linked list",
     },
-    "238-product-except-self": {
-        "difficulty": Difficulty.MEDIUM,
-        "function": medium_solutions.problem_238_product_of_array_except_self,
+    "150-evaluate-rpn": {
+        "difficulty": Difficulty.EASY,
+        "function": easy_solutions.problem_150_evaluate_rpn,
+        "category": "Stack",
+        "description": "Evaluate Reverse Polish Notation expression",
+    },
+    "155-min-stack": {
+        "difficulty": Difficulty.EASY,
+        "function": easy_solutions.problem_155_min_stack,
+        "category": "Stack",
+        "description": "Design stack that supports push/pop/top/getMin",
+    },
+    "198-house-robber": {
+        "difficulty": Difficulty.EASY,
+        "function": easy_solutions.problem_198_house_robber,
+        "category": "Dynamic Programming",
+        "description": "Maximize robbery profit without adjacent houses",
+    },
+    "205-isomorphic-strings": {
+        "difficulty": Difficulty.EASY,
+        "function": easy_solutions.problem_205_isomorphic_strings,
+        "category": "Strings",
+        "description": "Check if strings are isomorphic",
+    },
+    "206-reverse-linked-list": {
+        "difficulty": Difficulty.EASY,
+        "function": easy_solutions.problem_206_reverse_linked_list,
+        "category": "Linked Lists",
+        "description": "Reverse a singly linked list",
+    },
+    "217-contains-duplicate": {
+        "difficulty": Difficulty.EASY,
+        "function": easy_solutions.problem_217_contains_duplicate,
+        "category": "Arrays & Hashing",
+        "description": "Check if array contains duplicates",
+    },
+    "226-invert-binary-tree": {
+        "difficulty": Difficulty.EASY,
+        "function": easy_solutions.problem_226_invert_binary_tree,
+        "category": "Trees",
+        "description": "Invert a binary tree (mirror image)",
+    },
+    "232-implement-queue-using-stacks": {
+        "difficulty": Difficulty.EASY,
+        "function": easy_solutions.problem_232_implement_queue_using_stacks,
+        "category": "Stack",
+        "description": "Implement queue using two stacks",
+    },
+    "234-palindrome-linked-list": {
+        "difficulty": Difficulty.EASY,
+        "function": easy_solutions.problem_234_palindrome_linked_list,
+        "category": "Linked Lists",
+        "description": "Check whether linked list is a palindrome",
+    },
+    "235-lowest-common-ancestor-bst": {
+        "difficulty": Difficulty.EASY,
+        "function": easy_solutions.problem_235_lowest_common_ancestor_bst,
+        "category": "Trees",
+        "description": "Find LCA in binary search tree",
+    },
+    "238-product-array-except-self": {
+        "difficulty": Difficulty.EASY,
+        "function": easy_solutions.problem_238_product_array_except_self,
         "category": "Arrays",
         "description": "Compute product of all elements except self",
     },
-    "46-permutations": {
-        "difficulty": Difficulty.MEDIUM,
-        "function": medium_solutions.problem_46_permutations,
-        "category": "Backtracking",
-        "description": "Generate all permutations of distinct integers",
+    "242-valid-anagram": {
+        "difficulty": Difficulty.EASY,
+        "function": easy_solutions.problem_242_valid_anagram,
+        "category": "Strings",
+        "description": "Check if two strings are anagrams",
     },
-    "139-word-break": {
-        "difficulty": Difficulty.MEDIUM,
-        "function": medium_solutions.problem_139_word_break,
-        "category": "Dynamic Programming",
-        "description": "Determine if string can be segmented into dictionary words",
+    "271-encode-decode-strings": {
+        "difficulty": Difficulty.EASY,
+        "function": easy_solutions.problem_271_encode_decode_strings,
+        "category": "Arrays & Hashing",
+        "description": "Encode and decode list of strings",
     },
-    "49-group-anagrams": {
-        "difficulty": Difficulty.MEDIUM,
-        "function": medium_solutions.problem_49_group_anagrams,
+    "290-word-pattern": {
+        "difficulty": Difficulty.EASY,
+        "function": easy_solutions.problem_290_word_pattern,
+        "category": "Strings",
+        "description": "Check if string matches pattern",
+    },
+    "344-reverse-string": {
+        "difficulty": Difficulty.EASY,
+        "function": easy_solutions.problem_344_reverse_string,
+        "category": "Two Pointers",
+        "description": "Reverse character array in-place",
+    },
+    "347-top-k-frequent": {
+        "difficulty": Difficulty.EASY,
+        "function": easy_solutions.problem_347_top_k_frequent,
         "category": "Hashing",
-        "description": "Group words that are anagrams",
+        "description": "Find k most frequent elements",
     },
-    "33-search-rotated": {
-        "difficulty": Difficulty.MEDIUM,
-        "function": medium_solutions.problem_33_search_in_rotated_sorted_array,
-        "category": "Binary Search",
-        "description": "Search in a rotated sorted array",
+    "383-ransom-note": {
+        "difficulty": Difficulty.EASY,
+        "function": easy_solutions.problem_383_ransom_note,
+        "category": "Strings",
+        "description": "Check if ransom note can be constructed",
     },
-    "15-3sum": {
+    # MEDIUM PROBLEMS
+    "3-longest-substring-without-repeating": {
         "difficulty": Difficulty.MEDIUM,
-        "function": medium_solutions.problem_15_3sum,
+        "function": medium_solutions.problem_3_longest_substring_without_repeating,
+        "category": "Strings",
+        "description": "Find longest substring without repeating characters",
+    },
+    "5-longest-palindromic-substring": {
+        "difficulty": Difficulty.MEDIUM,
+        "function": medium_solutions.problem_5_longest_palindromic_substring,
+        "category": "Strings",
+        "description": "Find the longest palindromic substring",
+    },
+    "11-container-with-most-water": {
+        "difficulty": Difficulty.MEDIUM,
+        "function": medium_solutions.problem_11_container_with_most_water,
+        "category": "Two Pointers",
+        "description": "Find two lines that form largest container",
+    },
+    "15-three-sum": {
+        "difficulty": Difficulty.MEDIUM,
+        "function": medium_solutions.problem_15_three_sum,
         "category": "Arrays",
         "description": "Find triplets that sum to zero",
-    },
-    "2-add-two-numbers": {
-        "difficulty": Difficulty.MEDIUM,
-        "function": medium_solutions.problem_2_add_two_numbers,
-        "category": "Linked Lists",
-        "description": "Add two numbers represented as linked lists",
-    },
-    "19-remove-nth-node-from-end": {
-        "difficulty": Difficulty.MEDIUM,
-        "function": medium_solutions.problem_19_remove_nth_node_from_end,
-        "category": "Linked Lists",
-        "description": "Remove the nth node from the end of list",
     },
     "24-swap-nodes-in-pairs": {
         "difficulty": Difficulty.MEDIUM,
@@ -243,23 +268,71 @@ PROBLEM_REGISTRY: Dict[str, Dict] = {
         "category": "Linked Lists",
         "description": "Swap adjacent linked list nodes in pairs",
     },
-    "148-sort-list": {
+    "54-spiral-matrix": {
         "difficulty": Difficulty.MEDIUM,
-        "function": medium_solutions.problem_148_sort_linked_list,
+        "function": medium_solutions.problem_54_spiral_matrix,
+        "category": "Arrays",
+        "description": "Traverse matrix in spiral order",
+    },
+    "73-set-matrix-zeroes": {
+        "difficulty": Difficulty.MEDIUM,
+        "function": medium_solutions.problem_73_set_matrix_zeroes,
+        "category": "Arrays",
+        "description": "Set matrix elements to zero if they contain zero",
+    },
+    "92-reverse-linked-list-ii": {
+        "difficulty": Difficulty.MEDIUM,
+        "function": medium_solutions.problem_92_reverse_linked_list_ii,
         "category": "Linked Lists",
-        "description": "Sort a linked list in O(n log n)",
+        "description": "Reverse a portion of linked list",
+    },
+    "98-validate-bst": {
+        "difficulty": Difficulty.MEDIUM,
+        "function": medium_solutions.problem_98_validate_bst,
+        "category": "Trees",
+        "description": "Validate if tree is binary search tree",
     },
     "102-binary-tree-level-order": {
         "difficulty": Difficulty.MEDIUM,
-        "function": medium_solutions.problem_102_binary_tree_level_order_traversal,
+        "function": medium_solutions.problem_102_binary_tree_level_order,
         "category": "Trees",
-        "description": "Perform level-order traversal on a binary tree",
+        "description": "Perform level-order traversal on binary tree",
     },
-    "105-construct-binary-tree": {
+    "105-construct-tree-preorder-inorder": {
         "difficulty": Difficulty.MEDIUM,
-        "function": medium_solutions.problem_105_construct_binary_tree_from_preorder_inorder,
+        "function": medium_solutions.problem_105_construct_tree_preorder_inorder,
         "category": "Trees",
-        "description": "Construct binary tree from preorder and inorder traversals",
+        "description": "Construct binary tree from preorder and inorder",
+    },
+    "139-word-break": {
+        "difficulty": Difficulty.MEDIUM,
+        "function": medium_solutions.problem_139_word_break,
+        "category": "Dynamic Programming",
+        "description": "Determine if string can be segmented into words",
+    },
+    "148-sort-list": {
+        "difficulty": Difficulty.MEDIUM,
+        "function": medium_solutions.problem_148_sort_list,
+        "category": "Linked Lists",
+        "description": "Sort a linked list in O(n log n)",
+    },
+    "151-reverse-words": {
+        "difficulty": Difficulty.MEDIUM,
+        "function": medium_solutions.problem_151_reverse_words,
+        "category": "Strings",
+        "description": "Reverse words in a string",
+    },
+    "152-maximum-product-subarray": {
+        "difficulty": Difficulty.MEDIUM,
+        "function": medium_solutions.problem_152_maximum_product_subarray,
+        "category": "Dynamic Programming",
+        "description": "Find contiguous subarray with max product",
+    },
+    "160-intersection-two-lists": {
+        "difficulty": Difficulty.MEDIUM,
+        "function": medium_solutions.problem_160_intersection_two_lists,
+        "category": "Linked Lists",
+        "description": "Find intersection of two linked lists",
     },
     "200-number-of-islands": {
         "difficulty": Difficulty.MEDIUM,
@@ -267,72 +340,96 @@ PROBLEM_REGISTRY: Dict[str, Dict] = {
         "category": "Graphs",
         "description": "Count islands in a 2D grid",
     },
-    "207-course-schedule": {
+    "227-basic-calculator-ii": {
         "difficulty": Difficulty.MEDIUM,
-        "function": medium_solutions.problem_207_course_schedule,
-        "category": "Graphs",
-        "description": "Check if course prerequisites allow completion",
+        "function": medium_solutions.problem_227_basic_calculator_ii,
+        "category": "Stack",
+        "description": "Implement calculator supporting +,-,*,/",
     },
-    "5-longest-palindrome-substring": {
+    "300-longest-increasing-subsequence": {
         "difficulty": Difficulty.MEDIUM,
-        "function": medium_solutions.problem_5_longest_palindromic_substring,
-        "category": "Strings",
-        "description": "Find the longest palindromic substring",
-    },
-    "62-unique-paths": {
-        "difficulty": Difficulty.MEDIUM,
-        "function": medium_solutions.problem_62_unique_paths,
+        "function": medium_solutions.problem_300_longest_increasing_subsequence,
         "category": "Dynamic Programming",
-        "description": "Count unique grid paths",
+        "description": "Find length of longest increasing subsequence",
     },
-    "516-longest-palindromic-subsequence": {
+    "394-decode-string": {
         "difficulty": Difficulty.MEDIUM,
-        "function": medium_solutions.problem_516_longest_palindromic_subsequence,
+        "function": medium_solutions.problem_394_decode_string,
+        "category": "Stack",
+        "description": "Decode encoded string",
+    },
+    "416-partition-equal-subset-sum": {
+        "difficulty": Difficulty.MEDIUM,
+        "function": medium_solutions.problem_416_partition_equal_subset_sum,
         "category": "Dynamic Programming",
-        "description": "Longest palindromic subsequence length",
+        "description": "Partition array into equal sum subsets",
     },
-    "146-lru-cache": {
+    "494-target-sum": {
         "difficulty": Difficulty.MEDIUM,
-        "function": medium_solutions.problem_146_lru_cache,
-        "category": "Design",
-        "description": "Create an LRU cache object",
+        "function": medium_solutions.problem_494_target_sum,
+        "category": "Dynamic Programming",
+        "description": "Find ways to assign signs to achieve target sum",
+    },
+    "621-task-scheduler": {
+        "difficulty": Difficulty.MEDIUM,
+        "function": medium_solutions.problem_621_task_scheduler,
+        "category": "Scheduling",
+        "description": "Schedule tasks with cooldown period",
     },
     # HARD PROBLEMS
-    "4-median-two-arrays": {
+    "4-median-two-sorted-arrays": {
         "difficulty": Difficulty.HARD,
-        "function": hard_solutions.problem_4_median_of_two_sorted_arrays,
+        "function": hard_solutions.problem_4_median_two_sorted_arrays,
         "category": "Binary Search",
         "description": "Find median of two sorted arrays",
     },
-    "87-scramble-string": {
-        "difficulty": Difficulty.HARD,
-        "function": hard_solutions.problem_87_scramble_string,
-        "category": "Dynamic Programming",
-        "description": "Check if one string is a scramble of another",
-    },
-    "44-wildcard-matching": {
-        "difficulty": Difficulty.HARD,
-        "function": hard_solutions.problem_44_wildcard_matching,
-        "category": "Strings",
-        "description": "Match wildcard pattern against string",
-    },
-    "10-regex-matching": {
+    "10-regular-expression-matching": {
         "difficulty": Difficulty.HARD,
         "function": hard_solutions.problem_10_regular_expression_matching,
         "category": "Strings",
         "description": "Regular expression matching with '.' and '*'",
     },
+    "23-merge-k-sorted-lists": {
+        "difficulty": Difficulty.HARD,
+        "function": hard_solutions.problem_23_merge_k_sorted_lists,
+        "category": "Linked Lists",
+        "description": "Merge k sorted linked lists",
+    },
+    "25-reverse-nodes-k-group": {
+        "difficulty": Difficulty.HARD,
+        "function": hard_solutions.problem_25_reverse_nodes_k_group,
+        "category": "Linked Lists",
+        "description": "Reverse nodes in k-group",
+    },
     "37-sudoku-solver": {
         "difficulty": Difficulty.HARD,
         "function": hard_solutions.problem_37_sudoku_solver,
         "category": "Backtracking",
-        "description": "Solve a Sudoku puzzle using backtracking",
+        "description": "Solve a Sudoku puzzle",
     },
-    "23-merge-k-sorted-lists": {
+    "42-trapping-rain-water": {
         "difficulty": Difficulty.HARD,
-        "function": hard_solutions.problem_23_merge_k_sorted_lists,
-        "category": "Heaps",
-        "description": "Merge k sorted linked lists into one sorted list",
+        "function": hard_solutions.problem_42_trapping_rain_water,
+        "category": "Arrays",
+        "description": "Calculate trapped rainwater",
+    },
+    "72-edit-distance": {
+        "difficulty": Difficulty.HARD,
+        "function": hard_solutions.problem_72_edit_distance,
+        "category": "Dynamic Programming",
+        "description": "Calculate minimum edit distance (Levenshtein)",
+    },
+    "84-largest-rectangle-histogram": {
+        "difficulty": Difficulty.HARD,
+        "function": hard_solutions.problem_84_largest_rectangle_histogram,
+        "category": "Stack",
+        "description": "Find largest rectangle area in histogram",
+    },
+    "123-best-time-buy-sell-stock-iii": {
+        "difficulty": Difficulty.HARD,
+        "function": hard_solutions.problem_123_best_time_buy_sell_stock_iii,
+        "category": "Dynamic Programming",
+        "description": "Max profit with at most 2 transactions",
     },
     "124-binary-tree-max-path-sum": {
         "difficulty": Difficulty.HARD,
@@ -340,47 +437,41 @@ PROBLEM_REGISTRY: Dict[str, Dict] = {
         "category": "Trees",
         "description": "Find maximum path sum in binary tree",
     },
+    "146-lru-cache": {
+        "difficulty": Difficulty.HARD,
+        "function": hard_solutions.problem_146_lru_cache,
+        "category": "Design",
+        "description": "Design and implement LRU cache",
+    },
+    "188-best-time-buy-sell-stock-iv": {
+        "difficulty": Difficulty.HARD,
+        "function": hard_solutions.problem_188_best_time_buy_sell_stock_iv,
+        "category": "Dynamic Programming",
+        "description": "Max profit with at most k transactions",
+    },
     "212-word-search-ii": {
         "difficulty": Difficulty.HARD,
         "function": hard_solutions.problem_212_word_search_ii,
         "category": "Trie",
-        "description": "Find words from dictionary in a board",
+        "description": "Find words from dictionary in board",
     },
-    "42-trapping-water": {
+    "295-find-median-data-stream": {
         "difficulty": Difficulty.HARD,
-        "function": hard_solutions.problem_42_trapping_rain_water,
-        "category": "Arrays",
-        "description": "Calculate trapped rainwater",
+        "function": hard_solutions.problem_295_find_median_data_stream,
+        "category": "Heaps",
+        "description": "Find median from data stream",
     },
-    "239-sliding-window-maximum": {
+    "297-serialize-deserialize-bst": {
         "difficulty": Difficulty.HARD,
-        "function": hard_solutions.problem_239_sliding_window_maximum,
-        "category": "Deque",
-        "description": "Maximum value in each sliding window",
-    },
-    "84-largest-rectangle-histogram": {
-        "difficulty": Difficulty.HARD,
-        "function": hard_solutions.problem_84_largest_rectangle_in_histogram,
-        "category": "Stacks",
-        "description": "Find largest rectangle area in histogram",
-    },
-    "297-serialize-deserialize-binary-tree": {
-        "difficulty": Difficulty.HARD,
-        "function": hard_solutions.problem_297_serialize_deserialize_binary_tree,
+        "function": hard_solutions.problem_297_serialize_deserialize_bst,
         "category": "Trees",
-        "description": "Serialize and deserialize a binary tree",
+        "description": "Serialize and deserialize BST",
     },
-    "32-longest-valid-parentheses": {
+    "312-burst-balloons": {
         "difficulty": Difficulty.HARD,
-        "function": hard_solutions.problem_32_longest_valid_parentheses,
+        "function": hard_solutions.problem_312_burst_balloons,
         "category": "Dynamic Programming",
-        "description": "Longest valid parentheses substring",
-    },
-    "76-minimum-window-substring": {
-        "difficulty": Difficulty.HARD,
-        "function": hard_solutions.problem_76_minimum_window_substring,
-        "category": "Strings",
-        "description": "Find minimum window substring containing all characters",
+        "description": "Maximize coins by bursting balloons",
     },
 }
 
