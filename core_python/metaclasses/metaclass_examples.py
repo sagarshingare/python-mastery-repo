@@ -13,7 +13,7 @@ class AttributeTrackerMeta(type):
         return super().__new__(mcs, name, bases, namespace)
 
 
-class Base tracked metaclass: # noqa: E999
+class Base(metaclass=AttributeTrackerMeta):
     """A base class that uses AttributeTrackerMeta."""
 
     pass

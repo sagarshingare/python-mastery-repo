@@ -1,1 +1,1 @@
-"""Exception handling patterns and custom error types.""%
+"""Exception handling patterns and custom error types."""

@@ -49,7 +49,13 @@ export PYTHONPATH=$(pwd)  # Add this to your shell profile for persistence
 make test
 ```
 
-5. Launch the example API service:
+5. Run full repository validation:
+
+```bash
+make check
+```
+
+6. Launch the example API service:
 
 ```bash
 make run-api
@@ -64,13 +70,28 @@ The repository is designed for hands-on learning. Each module includes a `README
 Run the examples as a Python package so imports resolve correctly:
 
 ```bash
-python -m core_python.basics.run_examples --module all
+python -m core_python.basics.examples --module all
 ```
 
 Run a single basics module:
 
 ```bash
-python -m core_python.basics.run_examples --module control_flow
+python -m core_python.basics.examples --module control_flow
+```
+
+### Standardized module entry points
+
+Many training modules now support a standardized alias format via `examples.py` in each package. That means major example packages can be launched with:
+
+```bash
+python -m core_python.oops.examples
+python -m pyspark.basics.examples
+```
+
+The `leetcode` package continues to use the problem runner directly:
+
+```bash
+python -m leetcode.run_problems list
 ```
 
 ### Advanced Python modules
@@ -124,6 +145,54 @@ python -m pytest -q
 ## Repository structure
 
 The repo is organized as a learning and engineering workspace with modular packages, example pipelines, infrastructure configuration, and interview-focused content.
+
+A top-level architecture diagram is available in `docs/diagrams/repo_architecture.md` for a quick visual map of the repo.
+
+### Repository hierarchy
+
+```text
+python-mastery-repo/
+├── api_development/            # FastAPI and Flask API examples, auth, rate limiting, production patterns
+├── cloud/                      # Cloud provider guides and architecture for AWS, Azure, Databricks, Snowflake
+├── core_python/                # Python fundamentals and advanced language topics
+│   ├── basics/
+│   ├── advanced_patterns/
+│   ├── async_programming/
+│   ├── decorators/
+│   ├── generators/
+│   ├── iterators/
+│   ├── metaclasses/
+│   └── typing/
+├── docs/                       # Architecture diagrams, best practices, cheatsheets, interview notes
+├── dsa/                        # Data structures and algorithms by category
+├── interview_prep/             # Behavioral and technical interview preparation content
+├── leetcode/                    # Algorithm practice by difficulty, solution registry, CLI runner
+│   ├── easy/
+│   ├── medium/
+│   ├── hard/
+│   └── run_problems.py
+├── numpy_lib/                  # NumPy tutorials, vectorization, arrays, optimization
+├── pandas_lib/                 # pandas examples and wrapper package to avoid name collision
+│   ├── basics/
+│   ├── groupby/
+│   └── joins/
+├── projects/                   # End-to-end projects and production-style pipelines
+├── pyspark/                    # Spark and Big Data examples, SQL, streaming, transformations
+├── sql/                        # SQL query patterns, joins, window functions, optimization
+├── statistics/                 # Practical statistics and hypothesis testing examples
+├── testing/                    # Pytest-based validation and repository test suite
+├── Dockerfile
+├── docker-compose.yml
+├── Makefile
+├── requirements.txt
+├── pyproject.toml
+└── setup.py
+```
+
+### Notes on package naming
+
+- `pandas_lib/` is intentionally separate from the installed `pandas` package so local examples do not shadow the real library.
+- The repo uses repeated module entry points like `README.md`, `__init__.py`, `run_examples.py`, and `solutions.py` in package folders. This is normal for modular training content, but you can standardize naming further if desired.
 
 ## Contributing
 

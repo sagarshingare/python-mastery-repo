@@ -7,7 +7,7 @@ import pytest
 
 from core_python.basics.variables import compute_discounted_price
 from core_python.oops.classes import Order, calculate_total_revenue
-from pandas.basics.dataframe_helper import clean_sales_data
+from pandas_lib.basics.dataframe_helper import clean_sales_data
 
 
 def test_compute_discounted_price_valid() -> None:
