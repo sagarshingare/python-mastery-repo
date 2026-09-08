@@ -1,5 +1,7 @@
 # Async Programming
 
+> **Learning Path**: [Stage 01: Core Python Mastery](file:///Users/sagarshingare/Documents/python-mastery-repo/LEARNING_PATH.md#stage-01-core-python-mastery) ▸ **Step 1.15: Concurrency: Asynchronous I/O**
+
 This folder contains comprehensive examples of asynchronous programming in Python using asyncio.
 
 ## Included topics
@@ -8,6 +10,7 @@ This folder contains comprehensive examples of asynchronous programming in Pytho
 - `async_tasks.py` - asyncio Task creation, management, cancellation, and exception handling
 - `async_concurrency.py` - producer-consumer patterns, semaphore-based limiting, and concurrent data processing
 - `event_loops.py` - event loop lifecycle management, executor integration, and sync-async bridging
+- `structured_concurrency.py` - structured concurrency with TaskGroup (Python 3.11+ / TaskGroupCompat)
 
 ## Python version
 

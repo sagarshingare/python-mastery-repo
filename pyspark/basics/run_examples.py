@@ -4,180 +4,172 @@ from __future__ import annotations
 
 import argparse
 import logging
-from pathlib import Path
-
-try:
-    from pyspark.sql import SparkSession
-    HAS_PYSPARK = True
-except ImportError:
-    HAS_PYSPARK = False
+from typing import Optional
 
 from pyspark.basics.spark_basics import (
-    create_spark_session,
-    create_dataframe_from_list,
+    HAS_PYSPARK,
     create_dataframe_from_dict,
-    inspect_dataframe,
+    create_dataframe_from_list,
+    create_spark_session,
+    define_custom_schema,
     filter_dataframe,
-    select_columns,
+    inspect_dataframe,
     sample_data,
+    select_columns,
+    stop_spark_session,
 )
 
 logger = logging.getLogger(__name__)
 
 
-def run_create_spark_session_examples() -> None:
+def run_create_spark_session_examples(spark: Optional[object] = None) -> None:
     """Demonstrate SparkSession creation."""
-    logger.info("Running SparkSession examples")
-
+    print("--- 1. SparkSession Initialization ---")
     if not HAS_PYSPARK:
-        print("PySpark not installed. Skipping examples.")
+        print("PySpark is not installed. Skipping demo.")
         return
 
-    spark = create_spark_session("Demo-App")
-    if spark:
-        print(f"SparkSession created: {spark.appName}")
-        print(f"Spark version: {spark.version}")
+    local_spark = spark or create_spark_session("Session-Demo")
+    if local_spark:
+        print(f"  App Name:      {local_spark.sparkContext.appName}")
+        print(f"  Spark Version: {local_spark.version}")
+        print(f"  Master URL:    {local_spark.sparkContext.master}")
+        if spark is None:
+            stop_spark_session(local_spark)
     else:
-        print("Failed to create SparkSession")
+        print("Failed to create SparkSession.")
 
 
-def run_create_dataframe_examples() -> None:
-    """Demonstrate DataFrame creation."""
-    logger.info("Running DataFrame creation examples")
-
+def run_create_dataframe_examples(spark: Optional[object] = None) -> None:
+    """Demonstrate DataFrame creation from lists and dictionaries."""
+    print("\n--- 2. DataFrame Ingestion (List & Dict) ---")
     if not HAS_PYSPARK:
-        print("PySpark not installed. Skipping examples.")
+        print("PySpark is not installed. Skipping demo.")
         return
 
-    spark = create_spark_session("DataFrame-Demo")
-    if not spark:
+    local_spark = spark or create_spark_session("DataFrame-Demo")
+    if not local_spark:
         return
 
-    # From list
+    # From typed list with custom schema
+    schema = define_custom_schema()
     data = sample_data()
-    print(f"\nSample data: {data}")
+    df_list = create_dataframe_from_list(local_spark, data, schema=schema)
+    if df_list:
+        print("DataFrame from List (Strongly Typed Schema):")
+        df_list.show()
 
-    df = create_dataframe_from_list(spark, data, ["id", "name", "salary"])
-    if df:
-        print("\nDataFrame created from list:")
-        df.show()
-
-    # From dict
+    # From dicts
     dict_data = [
-        {"id": 1, "name": "Alice", "salary": 50000.0},
-        {"id": 2, "name": "Bob", "salary": 60000.0},
+        {"id": 101, "name": "Fiona", "department": "Design", "salary": 72000.0},
+        {"id": 102, "name": "George", "department": "Design", "salary": 78000.0},
     ]
-    df_dict = create_dataframe_from_dict(spark, dict_data)
+    df_dict = create_dataframe_from_dict(local_spark, dict_data)
     if df_dict:
-        print("\nDataFrame created from dict:")
+        print("DataFrame from Dictionaries:")
         df_dict.show()
 
+    if spark is None:
+        stop_spark_session(local_spark)
 
-def run_inspect_dataframe_examples() -> None:
-    """Demonstrate DataFrame inspection."""
-    logger.info("Running DataFrame inspection examples")
 
+def run_inspect_dataframe_examples(spark: Optional[object] = None) -> None:
+    """Demonstrate DataFrame schema and metadata inspection."""
+    print("\n--- 3. Schema & Metadata Inspection ---")
     if not HAS_PYSPARK:
-        print("PySpark not installed. Skipping examples.")
         return
 
-    spark = create_spark_session("Inspect-Demo")
-    if not spark:
+    local_spark = spark or create_spark_session("Inspect-Demo")
+    if not local_spark:
         return
 
-    data = sample_data()
-    df = create_dataframe_from_list(spark, data, ["id", "name", "salary"])
-
+    df = create_dataframe_from_list(local_spark, sample_data(), define_custom_schema())
     if df:
-        metadata = inspect_dataframe(df)
-        print(f"\nDataFrame metadata:")
-        for key, value in metadata.items():
-            print(f"  {key}: {value}")
+        meta = inspect_dataframe(df)
+        print(f"  Row Count: {meta['row_count']}")
+        print(f"  Columns:   {meta['columns']}")
+        print(f"  DataTypes: {meta['dtypes']}")
+
+    if spark is None:
+        stop_spark_session(local_spark)
 
 
-def run_filter_examples() -> None:
-    """Demonstrate DataFrame filtering."""
-    logger.info("Running DataFrame filter examples")
-
+def run_filter_examples(spark: Optional[object] = None) -> None:
+    """Demonstrate DataFrame row filtering."""
+    print("\n--- 4. DataFrame Filtering ---")
     if not HAS_PYSPARK:
-        print("PySpark not installed. Skipping examples.")
         return
 
-    spark = create_spark_session("Filter-Demo")
-    if not spark:
+    local_spark = spark or create_spark_session("Filter-Demo")
+    if not local_spark:
         return
 
-    data = sample_data()
-    df = create_dataframe_from_list(spark, data, ["id", "name", "salary"])
-
+    df = create_dataframe_from_list(local_spark, sample_data(), define_custom_schema())
     if df:
-        print("\nOriginal DataFrame:")
-        df.show()
-
-        filtered = filter_dataframe(df, "salary > 55000")
-        print("\nFiltered (salary > 55000):")
+        print("Employees with salary >= $90,000:")
+        filtered = filter_dataframe(df, "salary >= 90000")
         if filtered:
             filtered.show()
 
+    if spark is None:
+        stop_spark_session(local_spark)
 
-def run_select_examples() -> None:
-    """Demonstrate column selection."""
-    logger.info("Running DataFrame select examples")
 
+def run_select_examples(spark: Optional[object] = None) -> None:
+    """Demonstrate column selection and projection."""
+    print("\n--- 5. Column Selection & Projection ---")
     if not HAS_PYSPARK:
-        print("PySpark not installed. Skipping examples.")
         return
 
-    spark = create_spark_session("Select-Demo")
-    if not spark:
+    local_spark = spark or create_spark_session("Select-Demo")
+    if not local_spark:
         return
 
-    data = sample_data()
-    df = create_dataframe_from_list(spark, data, ["id", "name", "salary"])
-
+    df = create_dataframe_from_list(local_spark, sample_data(), define_custom_schema())
     if df:
-        print("\nOriginal DataFrame:")
-        df.show()
-
+        print("Projected columns [name, salary]:")
         selected = select_columns(df, ["name", "salary"])
-        print("\nSelected columns (name, salary):")
         if selected:
             selected.show()
 
+    if spark is None:
+        stop_spark_session(local_spark)
+
 
 def main() -> None:
-    """Main entry point for running examples."""
-    parser = argparse.ArgumentParser(description="Run PySpark basics examples")
+    parser = argparse.ArgumentParser(description="Run PySpark basics demonstrations")
     parser.add_argument(
-        "--module",
-        choices=["spark_session", "dataframe", "inspect", "filter", "select"],
-        help="Specific module to run examples for",
+        "--demo",
+        choices=["session", "dataframe", "inspect", "filter", "select", "all"],
+        default="all",
+        help="Demonstration to run (default: all)",
     )
     args = parser.parse_args()
 
-    # Configure logging
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     )
 
-    if args.module == "spark_session":
-        run_create_spark_session_examples()
-    elif args.module == "dataframe":
-        run_create_dataframe_examples()
-    elif args.module == "inspect":
-        run_inspect_dataframe_examples()
-    elif args.module == "filter":
-        run_filter_examples()
-    elif args.module == "select":
-        run_select_examples()
-    else:
-        # Run all examples
-        run_create_spark_session_examples()
-        run_create_dataframe_examples()
-        run_inspect_dataframe_examples()
-        run_filter_examples()
-        run_select_examples()
+    if not HAS_PYSPARK:
+        print("PySpark is not installed. Please install pyspark to run live demos.")
+        return
+
+    # Use a single shared SparkSession for the entire demo run
+    spark = create_spark_session("Basics-Master-Demo")
+    try:
+        if args.demo in ("all", "session"):
+            run_create_spark_session_examples(spark)
+        if args.demo in ("all", "dataframe"):
+            run_create_dataframe_examples(spark)
+        if args.demo in ("all", "inspect"):
+            run_inspect_dataframe_examples(spark)
+        if args.demo in ("all", "filter"):
+            run_filter_examples(spark)
+        if args.demo in ("all", "select"):
+            run_select_examples(spark)
+    finally:
+        stop_spark_session(spark)
 
 
 if __name__ == "__main__":

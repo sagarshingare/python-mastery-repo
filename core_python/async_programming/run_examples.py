@@ -33,6 +33,7 @@ from core_python.async_programming.event_loops import (
     run_async_from_sync,
     run_async_in_thread,
 )
+from core_python.async_programming.structured_concurrency import run_structured_concurrency_demos
 
 
 async def run_async_basics_examples() -> None:
@@ -144,6 +145,7 @@ async def run_all_async_examples() -> None:
     await run_async_concurrency_examples()
     await run_event_loops_examples()
     run_sync_examples()
+    await run_structured_concurrency_demos()
 
 
 def main() -> None:
@@ -151,7 +153,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Run async programming examples.")
     parser.add_argument(
         "--module",
-        choices=["basics", "tasks", "concurrency", "loops", "sync", "all"],
+        choices=["basics", "tasks", "concurrency", "loops", "sync", "structured", "all"],
         default="all",
         help="Module to run"
     )
@@ -167,6 +169,8 @@ def main() -> None:
         asyncio.run(run_event_loops_examples())
     elif args.module == "sync":
         run_sync_examples()
+    elif args.module == "structured":
+        asyncio.run(run_structured_concurrency_demos())
     else:
         asyncio.run(run_all_async_examples())
 

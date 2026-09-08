@@ -1,190 +1,188 @@
-"""Run PySpark transformation examples with a simple CLI."""
+"""Run PySpark transformation examples with a comprehensive CLI."""
 
 from __future__ import annotations
 
 import argparse
 import logging
-from typing import Any
+from typing import Optional
 
-try:
-    from pyspark.sql import SparkSession
-    from pyspark.sql.functions import col, lit
-    HAS_PYSPARK = True
-except ImportError:
-    HAS_PYSPARK = False
-
+from pyspark.basics.spark_basics import (
+    create_spark_session,
+    stop_spark_session,
+)
 from pyspark.transformations.transformations import (
+    HAS_PYSPARK,
     apply_map_transformation,
+    apply_window_analytics,
+    apply_window_function,
+    broadcast_join,
+    derive_columns,
     filter_greater_than,
     group_and_aggregate,
-    apply_window_function,
+    join_dataframes,
     union_dataframes,
 )
 
 logger = logging.getLogger(__name__)
 
 
-def create_sample_spark_df() -> Any:
-    """Create sample DataFrame for transformations."""
-    if not HAS_PYSPARK:
-        return None
-    
-    spark = SparkSession.builder.appName("Transform-Demo").master("local[*]").getOrCreate()
-    
+def create_employee_dataset(spark: object) -> object:
+    """Create a sample employee dataset for transformation demos."""
     data = [
-        (1, "Alice", 50000.0, "HR"),
-        (2, "Bob", 60000.0, "IT"),
-        (3, "Charlie", 55000.0, "IT"),
-        (4, "Diana", 75000.0, "HR"),
-        (5, "Eve", 65000.0, "IT"),
+        (1, "Alice", "Engineering", 95000.0),
+        (2, "Bob", "Marketing", 62000.0),
+        (3, "Charlie", "Engineering", 110000.0),
+        (4, "Diana", "Product", 88000.0),
+        (5, "Evan", "Engineering", 105000.0),
+        (6, "Fiona", "Marketing", 75000.0),
     ]
-    
-    return spark.createDataFrame(data, ["id", "name", "salary", "dept"])
+    return spark.createDataFrame(data, ["id", "name", "dept", "salary"])
 
 
-def run_map_examples() -> None:
-    """Demonstrate map transformations."""
-    logger.info("Running map transformation examples")
-
-    if not HAS_PYSPARK:
-        print("PySpark not installed. Skipping examples.")
-        return
-
-    df = create_sample_spark_df()
-    if df:
-        print("Original DataFrame:")
-        df.show()
-
-        # Add bonus column (salary * 1.1)
-        from pyspark.sql.functions import col
-        transformed = df.withColumn("bonus", col("salary") * 0.1)
-        print("\nWith bonus column (salary * 0.1):")
-        transformed.show()
+def create_department_dataset(spark: object) -> object:
+    """Create a small dimension department table for join demos."""
+    data = [
+        ("Engineering", "Building A", "Tech"),
+        ("Marketing", "Building B", "Business"),
+        ("Product", "Building A", "Product"),
+        ("Legal", "Building C", "Corporate"),
+    ]
+    return spark.createDataFrame(data, ["dept", "location", "division"])
 
 
-def run_filter_examples() -> None:
-    """Demonstrate filter transformations."""
-    logger.info("Running filter examples")
+def run_map_demo(spark: object) -> None:
+    """Demonstrate narrow column mapping and arithmetic."""
+    print("\n--- 1. Narrow Mapping & Column Derivation ---")
+    df = create_employee_dataset(spark)
+    print("Original Employees:")
+    df.show()
 
-    if not HAS_PYSPARK:
-        print("PySpark not installed. Skipping examples.")
-        return
-
-    df = create_sample_spark_df()
-    if df:
-        print("Original DataFrame:")
-        df.show()
-
-        filtered = filter_greater_than(df, "salary", 55000)
-        print("\nFiltered (salary > 55000):")
-        if filtered:
-            filtered.show()
+    derived = derive_columns(df)
+    if derived:
+        print("With Derived Columns (bonus, total_comp, tier):")
+        derived.select("name", "dept", "salary", "bonus", "total_comp", "tier").show()
 
 
-def run_group_and_aggregate_examples() -> None:
-    """Demonstrate groupBy and aggregation."""
-    logger.info("Running groupBy and aggregation examples")
-
-    if not HAS_PYSPARK:
-        print("PySpark not installed. Skipping examples.")
-        return
-
-    df = create_sample_spark_df()
-    if df:
-        print("Original DataFrame:")
-        df.show()
-
-        aggregated = group_and_aggregate(df, "dept", "salary", "sum")
-        print("\nGrouped by dept with sum of salary:")
-        if aggregated:
-            aggregated.show()
-
-        avg_agg = group_and_aggregate(df, "dept", "salary", "avg")
-        print("\nGrouped by dept with avg salary:")
-        if avg_agg:
-            avg_agg.show()
+def run_filter_demo(spark: object) -> None:
+    """Demonstrate narrow filter transformations."""
+    print("\n--- 2. Narrow Filtering (Predicate Pushdown Capable) ---")
+    df = create_employee_dataset(spark)
+    filtered = filter_greater_than(df, "salary", 80000.0)
+    if filtered:
+        print("Employees with salary > $80,000:")
+        filtered.show()
 
 
-def run_window_examples() -> None:
-    """Demonstrate window functions."""
-    logger.info("Running window function examples")
+def run_groupby_demo(spark: object) -> None:
+    """Demonstrate wide transformations (groupBy aggregation requiring shuffle)."""
+    print("\n--- 3. Wide Aggregations (Shuffle Required) ---")
+    df = create_employee_dataset(spark)
 
-    if not HAS_PYSPARK:
-        print("PySpark not installed. Skipping examples.")
-        return
+    print("Department Total Salary:")
+    agg_sum = group_and_aggregate(df, "dept", "salary", "sum")
+    if agg_sum:
+        agg_sum.show()
 
-    df = create_sample_spark_df()
-    if df:
-        print("Original DataFrame:")
-        df.show()
-
-        windowed = apply_window_function(df, "dept", "salary")
-        print("\nWith window ranking (by salary desc within dept):")
-        if windowed:
-            windowed.show()
+    print("Department Average Salary:")
+    agg_avg = group_and_aggregate(df, "dept", "salary", "avg")
+    if agg_avg:
+        agg_avg.show()
 
 
-def run_union_examples() -> None:
-    """Demonstrate union operations."""
-    logger.info("Running union examples")
+def run_join_demo(spark: object) -> None:
+    """Demonstrate standard inner and left joins."""
+    print("\n--- 4. DataFrame Joins ---")
+    emp_df = create_employee_dataset(spark)
+    dept_df = create_department_dataset(spark)
 
-    if not HAS_PYSPARK:
-        print("PySpark not installed. Skipping examples.")
-        return
+    print("Inner Join (Employees & Departments):")
+    joined = join_dataframes(emp_df, dept_df, join_key="dept", how="inner")
+    if joined:
+        joined.select("id", "name", "dept", "location", "division").show()
 
-    spark = SparkSession.builder.appName("Union-Demo").master("local[*]").getOrCreate()
 
-    data1 = [(1, "Alice"), (2, "Bob")]
-    data2 = [(3, "Charlie"), (4, "Diana")]
+def run_broadcast_demo(spark: object) -> None:
+    """Demonstrate optimized Broadcast Hash Join for dimension tables."""
+    print("\n--- 5. Broadcast Hash Join (Zero Shuffle for Lookup Table) ---")
+    emp_df = create_employee_dataset(spark)
+    dept_df = create_department_dataset(spark)
 
-    df1 = spark.createDataFrame(data1, ["id", "name"])
-    df2 = spark.createDataFrame(data2, ["id", "name"])
+    broadcasted = broadcast_join(emp_df, dept_df, join_key="dept", how="left")
+    if broadcasted:
+        print("Broadcast Join Result:")
+        broadcasted.select("name", "dept", "salary", "location").show()
 
-    print("DataFrame 1:")
-    df1.show()
 
-    print("\nDataFrame 2:")
-    df2.show()
+def run_window_demo(spark: object) -> None:
+    """Demonstrate analytical window functions (ranking and cumulative sum)."""
+    print("\n--- 6. Window Analytics (Rank & Running Total) ---")
+    df = create_employee_dataset(spark)
 
-    unioned = union_dataframes(df1, df2)
-    print("\nUnioned DataFrames:")
+    print("Rank within Department by Salary Descending:")
+    ranked = apply_window_function(df, partition_col="dept", order_col="salary")
+    if ranked:
+        ranked.show()
+
+    print("Advanced Window: Dense Rank and Cumulative Running Total:")
+    advanced = apply_window_analytics(df, partition_col="dept", order_col="salary", value_col="salary")
+    if advanced:
+        advanced.show()
+
+
+def run_union_demo(spark: object) -> None:
+    """Demonstrate unioning two DataFrames."""
+    print("\n--- 7. DataFrame Union ---")
+    data_cohort_a = [(101, "Grace", "Engineering", 99000.0)]
+    data_cohort_b = [(102, "Hank", "Product", 87000.0)]
+
+    df_a = spark.createDataFrame(data_cohort_a, ["id", "name", "dept", "salary"])
+    df_b = spark.createDataFrame(data_cohort_b, ["id", "name", "dept", "salary"])
+
+    unioned = union_dataframes(df_a, df_b)
     if unioned:
+        print("Unioned Cohorts:")
         unioned.show()
 
 
 def main() -> None:
-    """Main entry point for running examples."""
-    parser = argparse.ArgumentParser(description="Run PySpark transformation examples")
+    parser = argparse.ArgumentParser(description="Run PySpark transformation demonstrations")
     parser.add_argument(
+        "--demo",
         "--module",
-        choices=["map", "filter", "groupby", "window", "union"],
-        help="Specific module to run examples for",
+        dest="demo",
+        choices=["map", "filter", "derive", "groupby", "join", "broadcast", "window", "union", "all"],
+        default="all",
+        help="Demonstration to run (default: all)",
     )
     args = parser.parse_args()
 
-    # Configure logging
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     )
 
-    if args.module == "map":
-        run_map_examples()
-    elif args.module == "filter":
-        run_filter_examples()
-    elif args.module == "groupby":
-        run_group_and_aggregate_examples()
-    elif args.module == "window":
-        run_window_examples()
-    elif args.module == "union":
-        run_union_examples()
-    else:
-        # Run all examples
-        run_map_examples()
-        run_filter_examples()
-        run_group_and_aggregate_examples()
-        run_window_examples()
-        run_union_examples()
+    if not HAS_PYSPARK:
+        print("PySpark is not installed. Please install pyspark to run live demos.")
+        return
+
+    spark = create_spark_session("Transformations-Master-Demo")
+    try:
+        if args.demo in ("all", "map", "derive"):
+            run_map_demo(spark)
+        if args.demo in ("all", "filter"):
+            run_filter_demo(spark)
+        if args.demo in ("all", "groupby"):
+            run_groupby_demo(spark)
+        if args.demo in ("all", "join"):
+            run_join_demo(spark)
+        if args.demo in ("all", "broadcast"):
+            run_broadcast_demo(spark)
+        if args.demo in ("all", "window"):
+            run_window_demo(spark)
+        if args.demo in ("all", "union"):
+            run_union_demo(spark)
+    finally:
+        stop_spark_session(spark)
 
 
 if __name__ == "__main__":

@@ -1,5 +1,7 @@
 # Python Decorators
 
+> **Learning Path**: [Stage 01: Core Python Mastery](file:///Users/sagarshingare/Documents/python-mastery-repo/LEARNING_PATH.md#stage-01-core-python-mastery) ▸ **Step 1.5: Decorators & Metaprogramming**
+
 This folder contains examples of Python decorators for function instrumentation, caching, validation, and error handling.
 
 ## Included topics

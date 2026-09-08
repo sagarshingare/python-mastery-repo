@@ -1,5 +1,7 @@
 # Python Object-Oriented Programming
 
+> **Learning Path**: [Stage 01: Core Python Mastery](file:///Users/sagarshingare/Documents/python-mastery-repo/LEARNING_PATH.md#stage-01-core-python-mastery) ▸ **Step 1.2: Object-Oriented Programming**
+
 This folder contains comprehensive examples of object-oriented programming concepts in Python.
 
 ## Included topics
@@ -8,6 +10,8 @@ This folder contains comprehensive examples of object-oriented programming conce
 - `inheritance.py` - single and multiple inheritance, method overriding
 - `polymorphism.py` - polymorphism, duck typing, operator overloading
 - `abstraction.py` - abstract classes, interfaces, factory patterns
+- `descriptors.py` - descriptor protocol (`__get__`, `__set__`, `__delete__`, `__set_name__`), declarative models
+- `dataclass_features.py` - advanced dataclasses (`frozen`, `slots`, `kw_only`, `InitVar`, `__post_init__`)
 
 ## Python version
 

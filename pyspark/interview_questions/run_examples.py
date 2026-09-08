@@ -12,12 +12,13 @@ import logging
 from typing import Any, Dict
 
 from pyspark.interview_questions.pyspark_interview import (
-    PySpark_Fundamentals,
-    Partitioning_Strategy,
+    Architecture_Tradeoffs,
+    Coding_Problems,
     Memory_Management,
     Most_Asked_Questions,
-    Coding_Problems,
+    Partitioning_Strategy,
     Performance_Tuning,
+    PySpark_Fundamentals,
 )
 
 logger = logging.getLogger(__name__)
@@ -148,6 +149,33 @@ def run_performance_tuning() -> None:
     print_section("Reading Explain Plans", content)
 
 
+def run_tradeoffs() -> None:
+    """Run lakehouse and architectural tradeoffs examples."""
+    logger.info("Running Architecture & Ecosystem Tradeoffs")
+    
+    print("\n### ARCHITECTURE & LAKEHOUSE TRADEOFFS (ICEBERG, DELTA, FILE FORMATS) ###")
+    
+    # 1. Open Table Formats
+    content = Architecture_Tradeoffs.table_formats_iceberg_vs_delta_vs_hudi()
+    print_section("Open Table Formats: Apache Iceberg vs Delta Lake vs Apache Hudi", content)
+    
+    # 2. File Formats
+    content = Architecture_Tradeoffs.file_formats_parquet_vs_orc_vs_avro()
+    print_section("File Serialization: Parquet vs ORC vs Avro", content)
+    
+    # 3. Repartition vs Coalesce
+    content = Architecture_Tradeoffs.repartition_vs_coalesce()
+    print_section("Partition Management: Repartition vs Coalesce", content)
+    
+    # 4. Join Strategies
+    content = Architecture_Tradeoffs.join_strategies_tradeoffs()
+    print_section("Execution Strategies: Join Selection & Skew Mitigation", content)
+    
+    # 5. Medallion Lakehouse Architecture
+    content = Architecture_Tradeoffs.lakehouse_medallion_tradeoffs()
+    print_section("Medallion Architecture: Bronze vs Silver vs Gold Tradeoffs", content)
+
+
 def run_all() -> None:
     """Run all examples."""
     run_fundamentals()
@@ -156,15 +184,18 @@ def run_all() -> None:
     run_most_asked()
     run_coding_problems()
     run_performance_tuning()
+    run_tradeoffs()
 
 
 def main() -> None:
     """Main entry point."""
     parser = argparse.ArgumentParser(
-        description="PySpark Interview Questions and Coding Problems"
+        description="PySpark Interview Questions, Lakehouse Tradeoffs, and Coding Problems"
     )
     parser.add_argument(
+        "--demo",
         "--module",
+        dest="module",
         choices=[
             "fundamentals",
             "partitioning",
@@ -172,10 +203,11 @@ def main() -> None:
             "most_asked",
             "coding_problems",
             "performance",
+            "tradeoffs",
             "all",
         ],
         default="all",
-        help="Specific module to run",
+        help="Specific category or demonstration to run (default: all)",
     )
     args = parser.parse_args()
 
@@ -197,6 +229,8 @@ def main() -> None:
         run_coding_problems()
     elif args.module == "performance":
         run_performance_tuning()
+    elif args.module == "tradeoffs":
+        run_tradeoffs()
     else:
         run_all()
 

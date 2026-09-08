@@ -1,226 +1,164 @@
-"""Run PySpark action examples with a simple CLI."""
+"""Run PySpark action and file sink examples with a comprehensive CLI."""
 
 from __future__ import annotations
 
 import argparse
 import logging
-from typing import Any
-
-try:
-    from pyspark.sql import SparkSession
-    HAS_PYSPARK = True
-except ImportError:
-    HAS_PYSPARK = False
+import os
+import tempfile
+from typing import Optional
 
 from pyspark.actions.actions import (
+    HAS_PYSPARK,
     collect_data,
     count_rows,
     get_first_row,
-    take_rows,
+    get_statistics,
+    read_storage,
     show_data,
-    foreach_row,
-    write_parquet,
+    summarize_dataframe,
+    take_rows,
     write_csv,
     write_json,
-    get_statistics,
+    write_parquet,
+    write_partitioned,
+)
+from pyspark.basics.spark_basics import (
+    create_spark_session,
+    stop_spark_session,
 )
 
 logger = logging.getLogger(__name__)
 
 
-def create_sample_spark_df() -> Any:
-    """Create sample DataFrame for action examples."""
-    if not HAS_PYSPARK:
-        return None
-    
-    spark = SparkSession.builder.appName("Actions-Demo").master("local[*]").getOrCreate()
-    
+def create_sample_dataset(spark: object) -> object:
+    """Create sample sales/employee records for action demonstrations."""
     data = [
-        (1, "Alice", 50000.0, "HR"),
-        (2, "Bob", 60000.0, "IT"),
-        (3, "Charlie", 55000.0, "IT"),
-        (4, "Diana", 75000.0, "HR"),
-        (5, "Eve", 65000.0, "IT"),
+        (1, "Alice", 95000.0, "Engineering", "East"),
+        (2, "Bob", 62000.0, "Marketing", "West"),
+        (3, "Charlie", 110000.0, "Engineering", "East"),
+        (4, "Diana", 88000.0, "Product", "West"),
+        (5, "Evan", 105000.0, "Engineering", "Central"),
+        (6, "Fiona", 74000.0, "Marketing", "Central"),
     ]
-    
-    return spark.createDataFrame(data, ["id", "name", "salary", "dept"])
+    return spark.createDataFrame(data, ["id", "name", "salary", "dept", "region"])
 
 
-def run_collect_examples() -> None:
-    """Demonstrate collect action."""
-    logger.info("Running collect examples")
+def run_collect_demo(df: object) -> None:
+    """Demonstrate collect action vs take action."""
+    print("\n--- 1. Collect Action vs Take (Driver Memory Management) ---")
+    first_row = get_first_row(df)
+    print(f"First Row: {first_row}")
 
-    if not HAS_PYSPARK:
-        print("PySpark not installed. Skipping examples.")
-        return
+    top3 = take_rows(df, 3)
+    print("Take First 3 Rows (Safe for Large Datasets):")
+    for row in top3:
+        print(f"  {row}")
 
-    df = create_sample_spark_df()
-    if df:
-        print("Collecting all data to driver:")
-        data = collect_data(df)
-        print(f"Collected {len(data)} rows:")
-        for row in data:
-            print(f"  {row}")
+    print("Full Collection to Driver (Caution on multi-GB tables):")
+    all_rows = collect_data(df)
+    print(f"Collected total {len(all_rows)} rows.")
 
 
-def run_count_examples() -> None:
+def run_count_demo(df: object) -> None:
     """Demonstrate count action."""
-    logger.info("Running count examples")
-
-    if not HAS_PYSPARK:
-        print("PySpark not installed. Skipping examples.")
-        return
-
-    df = create_sample_spark_df()
-    if df:
-        row_count = count_rows(df)
-        print(f"Total rows in DataFrame: {row_count}")
+    print("\n--- 2. Count Action ---")
+    row_count = count_rows(df)
+    print(f"Total row count in DataFrame: {row_count}")
 
 
-def run_first_examples() -> None:
-    """Demonstrate first and take actions."""
-    logger.info("Running first and take examples")
-
-    if not HAS_PYSPARK:
-        print("PySpark not installed. Skipping examples.")
-        return
-
-    df = create_sample_spark_df()
-    if df:
-        first_row = get_first_row(df)
-        print(f"First row: {first_row}")
-
-        taken_rows = take_rows(df, 3)
-        print(f"\nFirst 3 rows:")
-        for row in taken_rows:
-            print(f"  {row}")
+def run_summary_demo(df: object) -> None:
+    """Demonstrate statistical summary profiling."""
+    print("\n--- 3. Statistical Summary Profiling (.summary()) ---")
+    summary = summarize_dataframe(df)
+    if summary:
+        summary.show()
 
 
-def run_show_examples() -> None:
-    """Demonstrate show action."""
-    logger.info("Running show examples")
+def run_write_demo(df: object) -> None:
+    """Demonstrate multi-format file writes (Parquet, CSV, JSON)."""
+    print("\n--- 4. Multi-Format File Persistence ---")
+    with tempfile.TemporaryDirectory() as tmpdir:
+        parquet_path = os.path.join(tmpdir, "employees.parquet")
+        csv_path = os.path.join(tmpdir, "employees.csv")
+        json_path = os.path.join(tmpdir, "employees.json")
 
-    if not HAS_PYSPARK:
-        print("PySpark not installed. Skipping examples.")
-        return
+        if write_parquet(df, parquet_path):
+            print(f"✓ Wrote Parquet (Snappy-compressed) to: {parquet_path}")
 
-    df = create_sample_spark_df()
-    if df:
-        print("Formatted DataFrame display:")
-        show_data(df, num_rows=5, truncate=False)
+        if write_csv(df, csv_path):
+            print(f"✓ Wrote CSV with headers to:             {csv_path}")
 
-
-def run_foreach_examples() -> None:
-    """Demonstrate foreach action."""
-    logger.info("Running foreach examples")
-
-    if not HAS_PYSPARK:
-        print("PySpark not installed. Skipping examples.")
-        return
-
-    df = create_sample_spark_df()
-    if df:
-        print("Processing each row with foreach:")
-        
-        def process_row(row: Any) -> None:
-            """Process a single row."""
-            print(f"  Processing: {row['name']} with salary {row['salary']}")
-        
-        count = foreach_row(df, process_row)
-        print(f"Processed {count} rows")
+        if write_json(df, json_path):
+            print(f"✓ Wrote newline-delimited JSON to:      {json_path}")
 
 
-def run_statistics_examples() -> None:
-    """Demonstrate statistics action."""
-    logger.info("Running statistics examples")
+def run_partition_demo(spark: object, df: object) -> None:
+    """Demonstrate partitioned writes and round-trip read with partition discovery."""
+    print("\n--- 5. Partitioned Sinks & Read-Back ---")
+    with tempfile.TemporaryDirectory() as tmpdir:
+        partition_path = os.path.join(tmpdir, "partitioned_by_dept")
+        print(f"Writing dataset partitioned by 'dept' to: {partition_path}")
 
-    if not HAS_PYSPARK:
-        print("PySpark not installed. Skipping examples.")
-        return
+        success = write_partitioned(df, partition_path, partition_cols=["dept"], file_format="parquet")
+        if success:
+            print("✓ Partition write succeeded.")
+            print("Directory structure created by Spark:")
+            for root, dirs, files in os.walk(partition_path):
+                level = root.replace(partition_path, "").count(os.sep)
+                indent = " " * 4 * level
+                print(f"{indent}{os.path.basename(root)}/")
+                subindent = " " * 4 * (level + 1)
+                for f in files:
+                    if f.endswith(".parquet"):
+                        print(f"{subindent}{f}")
 
-    df = create_sample_spark_df()
-    if df:
-        stats = get_statistics(df)
-        print("DataFrame Statistics:")
-        print(f"  Row count: {stats.get('row_count', 'N/A')}")
-        print(f"  Column count: {stats.get('column_count', 'N/A')}")
-        print(f"  Columns: {stats.get('columns', [])}")
-        print(f"  Data types:")
-        for col_name, dtype in stats.get('dtypes', []):
-            print(f"    {col_name}: {dtype}")
-
-
-def run_write_examples() -> None:
-    """Demonstrate write actions."""
-    logger.info("Running write examples")
-
-    if not HAS_PYSPARK:
-        print("PySpark not installed. Skipping examples.")
-        return
-
-    df = create_sample_spark_df()
-    if df:
-        import tempfile
-        import os
-        
-        with tempfile.TemporaryDirectory() as tmpdir:
-            print(f"Writing DataFrame to temporary directory: {tmpdir}")
-            
-            # Write Parquet
-            parquet_path = os.path.join(tmpdir, "data.parquet")
-            if write_parquet(df, parquet_path):
-                print(f"✓ Successfully wrote Parquet to {parquet_path}")
-            
-            # Write CSV
-            csv_path = os.path.join(tmpdir, "data.csv")
-            if write_csv(df, csv_path):
-                print(f"✓ Successfully wrote CSV to {csv_path}")
-            
-            # Write JSON
-            json_path = os.path.join(tmpdir, "data.json")
-            if write_json(df, json_path):
-                print(f"✓ Successfully wrote JSON to {json_path}")
+            # Round-trip read back
+            reloaded = read_storage(spark, partition_path, file_format="parquet")
+            if reloaded:
+                print("\nReloaded DataFrame from partitioned Parquet (Spark auto-infers partition columns):")
+                reloaded.show()
 
 
 def main() -> None:
-    """Main entry point for running examples."""
-    parser = argparse.ArgumentParser(description="Run PySpark action examples")
+    parser = argparse.ArgumentParser(description="Run PySpark action demonstrations")
     parser.add_argument(
+        "--demo",
         "--module",
-        choices=["collect", "count", "first", "show", "foreach", "statistics", "write"],
-        help="Specific module to run examples for",
+        dest="demo",
+        choices=["collect", "count", "take", "show", "summary", "write", "partition", "all"],
+        default="all",
+        help="Demonstration to run (default: all)",
     )
     args = parser.parse_args()
 
-    # Configure logging
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     )
 
-    if args.module == "collect":
-        run_collect_examples()
-    elif args.module == "count":
-        run_count_examples()
-    elif args.module == "first":
-        run_first_examples()
-    elif args.module == "show":
-        run_show_examples()
-    elif args.module == "foreach":
-        run_foreach_examples()
-    elif args.module == "statistics":
-        run_statistics_examples()
-    elif args.module == "write":
-        run_write_examples()
-    else:
-        # Run all examples
-        run_collect_examples()
-        run_count_examples()
-        run_first_examples()
-        run_show_examples()
-        run_foreach_examples()
-        run_statistics_examples()
-        run_write_examples()
+    if not HAS_PYSPARK:
+        print("PySpark is not installed. Please install pyspark to run live demos.")
+        return
+
+    spark = create_spark_session("Actions-Master-Demo")
+    try:
+        df = create_sample_dataset(spark)
+        if args.demo in ("all", "collect", "take"):
+            run_collect_demo(df)
+        if args.demo in ("all", "count"):
+            run_count_demo(df)
+        if args.demo in ("all", "show"):
+            print("\n--- Display Action (.show()) ---")
+            show_data(df, num_rows=5, truncate=False)
+        if args.demo in ("all", "summary"):
+            run_summary_demo(df)
+        if args.demo in ("all", "write"):
+            run_write_demo(df)
+        if args.demo in ("all", "partition"):
+            run_partition_demo(spark, df)
+    finally:
+        stop_spark_session(spark)
 
 
 if __name__ == "__main__":

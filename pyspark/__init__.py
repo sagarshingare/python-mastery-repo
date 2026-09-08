@@ -1,62 +1,43 @@
 """PySpark package wrapper.
 
-This package preserves local PySpark learning content while delegating runtime
-access to the installed pyspark library.
+This package exposes local learning modules while seamlessly bridging to the
+installed PySpark runtime and auto-configuring the Java 17+ environment.
 """
 
 from __future__ import annotations
 
-import importlib.util
+import os
 import site
 import sys
-from pathlib import Path
-from types import ModuleType
-from typing import Any
 
-_external_module_name = "_external_pyspark"
-_external_pyspark: ModuleType | None = None
+# 1. Prefer Java 17+ for PySpark 4 compatibility
+for candidate in [
+    "/opt/homebrew/opt/openjdk@17",
+    "/opt/homebrew/opt/openjdk",
+    "/usr/local/opt/openjdk@17",
+    "/usr/local/opt/openjdk",
+]:
+    if os.path.exists(candidate):
+        os.environ["JAVA_HOME"] = candidate
+        os.environ["PATH"] = f"{candidate}/bin:{os.environ.get('PATH', '')}"
+        break
 
+# 2. Worker Python executable alignment
+os.environ.setdefault("PYSPARK_PYTHON", sys.executable)
+os.environ.setdefault("PYSPARK_DRIVER_PYTHON", sys.executable)
 
-def _load_external_pyspark() -> ModuleType | None:
-    global _external_pyspark
-    if _external_pyspark is not None:
-        return _external_pyspark
+# 3. Extend __path__ with site-packages pyspark
+_real_init = None
+for base in site.getsitepackages() + [site.getusersitepackages()]:
+    cand = os.path.join(base, "pyspark")
+    if os.path.isdir(cand) and cand not in __path__:
+        __path__.append(cand)
+        init_candidate = os.path.join(cand, "__init__.py")
+        if os.path.exists(init_candidate) and _real_init is None:
+            _real_init = init_candidate
 
-    for base in site.getsitepackages() + [site.getusersitepackages()]:
-        path = Path(base) / "pyspark"
-        if path.exists():
-            spec = importlib.util.spec_from_file_location("pyspark", path / "__init__.py")
-            if spec and spec.loader:
-                module = importlib.util.module_from_spec(spec)
-                original_pyspark = sys.modules.get("pyspark")
-                sys.modules["pyspark"] = module
-                root_dir = str(Path(__file__).resolve().parent.parent)
-                original_sys_path = sys.path.copy()
-                sys.path = [entry for entry in sys.path if entry not in (root_dir, "", ".")]
-                try:
-                    spec.loader.exec_module(module)
-                finally:
-                    sys.path = original_sys_path
-                    if original_pyspark is not None:
-                        sys.modules["pyspark"] = original_pyspark
-                    else:
-                        sys.modules.pop("pyspark", None)
-                _external_pyspark = module
-                return _external_pyspark
-    return None
-
-
-_load_external_pyspark()
-
-
-def __getattr__(name: str) -> Any:
-    if _external_pyspark is not None:
-        return getattr(_external_pyspark, name)
-    raise AttributeError(name)
-
-
-def __dir__() -> list[str]:
-    names = set(globals().keys())
-    if _external_pyspark is not None:
-        names |= {item for item in dir(_external_pyspark) if not item.startswith("_")}
-    return sorted(names)
+# 4. Populate namespace with real pyspark exports
+if _real_init:
+    with open(_real_init, "r", encoding="utf-8") as f:
+        code = compile(f.read(), _real_init, "exec")
+        exec(code, globals())

@@ -7,14 +7,23 @@ import logging
 from pathlib import Path
 
 from core_python.oops.abstraction import (
+    BubbleSortStrategy,
     CreditCardProcessor,
     PayPalProcessor,
+    QuickSortStrategy,
     ShapeFactory,
     Sorter,
 )
 from core_python.oops.classes_basics import BankAccount, Counter, Rectangle
 from core_python.oops.inheritance import AdvancedVehicle, Car, ElectricCar
-from core_python.oops.polymorphism import Dog, Cat, Vector, Painter
+from core_python.oops.polymorphism import (
+    Dog, Cat, Vector, Painter,
+    Circle as DrawableCircle,
+    Rectangle as DrawableRectangle,
+    Text,
+)
+from core_python.oops.descriptors import run_descriptor_demos
+from core_python.oops.dataclass_features import run_dataclass_demos
 
 logger = logging.getLogger(__name__)
 
@@ -50,12 +59,11 @@ def run_inheritance_examples() -> None:
     car = Car("Toyota", "Camry", 2020, 4)
     print(f"Car description: {car.get_description()}")
     print(f"Car start: {car.start_engine()}")
-    print(f"Car fuel efficiency: {car.get_fuel_efficiency()}")
 
     electric_car = ElectricCar("Tesla", "Model 3", 2023, 75)
     print(f"Electric car description: {electric_car.get_description()}")
     print(f"Electric car start: {electric_car.start_engine()}")
-    print(f"Electric car range: {electric_car.get_range()}")
+    print(f"Electric car charge level: {electric_car.charge_level}%")
 
     advanced_vehicle = AdvancedVehicle("BMW", "X5", 2022)
     print(f"Advanced vehicle: {advanced_vehicle.get_description()}")
@@ -78,12 +86,14 @@ def run_polymorphism_examples() -> None:
     print(f"v1 + v2 = {v1 + v2}")
     print(f"v1 * 2 = {v1 * 2}")
 
-    # Painter with different shapes
-    painter = Painter()
-    painter.add_shape("circle", 5)
-    painter.add_shape("rectangle", 10, 20)
-    painter.add_shape("text", "Hello World")
-    painter.draw_all()
+    # Painter with different drawable shapes
+    circle = DrawableCircle(5)
+    rectangle = DrawableRectangle(10, 20)
+    text = Text("Hello World")
+
+    print(Painter.draw_shape(circle))
+    print(Painter.draw_shape(rectangle))
+    print(Painter.draw_shape(text))
 
 
 def run_abstraction_examples() -> None:
@@ -92,27 +102,30 @@ def run_abstraction_examples() -> None:
 
     # Payment processors
     credit_processor = CreditCardProcessor("1234-5678-9012-3456")
-    paypal_processor = PayPalProcessor("user@example.com")
+    paypal_processor = PayPalProcessor("client_id_example", "client_secret_example")
 
-    print(f"Credit card validation: {credit_processor.validate_payment(100.0)}")
-    print(f"PayPal validation: {paypal_processor.validate_payment(50.0)}")
+    print(f"Credit card payment: {credit_processor.process_payment(100.0)}")
+    print(f"PayPal payment: {paypal_processor.process_payment(50.0)}")
 
     # Shape factory
     factory = ShapeFactory()
-    circle = factory.create_shape("circle", radius=5)
-    rectangle = factory.create_shape("rectangle", width=10, height=20)
-    triangle = factory.create_shape("triangle", base=6, height=8)
+    circle = factory.create_circle(5)
+    rectangle = factory.create_rectangle(10, 20)
+    triangle = factory.create_triangle(6, 8)
 
     print(f"Circle area: {circle.area()}")
     print(f"Rectangle area: {rectangle.area()}")
     print(f"Triangle area: {triangle.area()}")
 
     # Sorter with different strategies
-    sorter = Sorter()
     data = [64, 34, 25, 12, 22, 11, 90]
     print(f"Original data: {data}")
-    sorter.sort(data.copy(), "bubble")
-    sorter.sort(data.copy(), "quick")
+
+    bubble_sorter = Sorter(BubbleSortStrategy())
+    print(f"Bubble sorted: {bubble_sorter.sort(data.copy())}")
+
+    quick_sorter = Sorter(QuickSortStrategy())
+    print(f"Quick sorted: {quick_sorter.sort(data.copy())}")
 
 
 def main() -> None:
@@ -120,7 +133,8 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Run Python OOP examples")
     parser.add_argument(
         "--module",
-        choices=["classes_basics", "inheritance", "polymorphism", "abstraction"],
+        choices=["classes_basics", "inheritance", "polymorphism", "abstraction", "descriptors", "dataclasses", "all"],
+        default="all",
         help="Specific module to run examples for",
     )
     args = parser.parse_args()
@@ -139,12 +153,18 @@ def main() -> None:
         run_polymorphism_examples()
     elif args.module == "abstraction":
         run_abstraction_examples()
+    elif args.module == "descriptors":
+        run_descriptor_demos()
+    elif args.module == "dataclasses":
+        run_dataclass_demos()
     else:
         # Run all examples
         run_classes_basics_examples()
         run_inheritance_examples()
         run_polymorphism_examples()
         run_abstraction_examples()
+        run_descriptor_demos()
+        run_dataclass_demos()
 
 
 if __name__ == "__main__":

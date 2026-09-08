@@ -1,50 +1,59 @@
 # PySpark Transformations
 
-This folder contains PySpark transformation examples for processing and manipulating data.
+> **Learning Path**: [Stage 06: Distributed Big Data](file:///Users/sagarshingare/Documents/python-mastery-repo/LEARNING_PATH.md#stage-06-distributed-big-data) ▸ **Step 6.2: Spark Transformations**
 
-## Included topics
+This module demonstrates PySpark transformations, contrasting narrow operations (in-memory, pipelineable without shuffling) with wide operations (requiring cluster-wide stage boundaries and shuffles), alongside broadcast joins and window analytics.
 
-- `transformations.py` - map, filter, groupBy, window functions, and union operations
+---
 
-## Python version
+## Key Concepts & Architecture
 
-This module is written for Python 3.9+ and requires PySpark 3.5+.
+1. **Narrow Transformations (No Shuffle)**:
+   - Evaluated within the local partition executor without data movement across the network.
+   - Operations: `filter()`, `select()`, `withColumn()`, conditional expressions (`when().otherwise()`).
+2. **Wide Transformations (Shuffle Boundaries)**:
+   - Data with the same key across partitions must be regrouped over the network into new partitions.
+   - Operations: `groupBy().agg()`, standard `join()`, `distinct()`.
+3. **Broadcast Hash Joins**:
+   - For small lookup/dimension tables (default threshold 10MB in Spark), broadcasts copies to all executors.
+   - Eliminates shuffle of the large fact table completely.
+4. **Window Analytical Functions**:
+   - `Window.partitionBy().orderBy()` for partitions without collapsing rows.
+   - Ranking (`row_number()`, `dense_rank()`) and cumulative aggregates (`running_total`).
 
-## Learning outcomes
+---
 
-- Apply map and filter transformations
-- Use groupBy and aggregation functions
-- Implement window functions for advanced analytics
-- Union and join DataFrames
-- Flatten nested data structures
+## Files
 
-## Usage
+| File | Description |
+|------|-------------|
+| `transformations.py` | Implementation of narrow/wide transformations, broadcast joins, and window analytics |
+| `run_examples.py` | CLI demo runner with `--demo` selector |
+| `examples.py` | Standard entry point alias |
+| `__init__.py` | Public API exports for `pyspark.transformations` |
 
-Import the transformation functions from `pyspark.transformations` and use them in your applications.
+---
 
-Example:
+## Interactive Demos
 
-```python
-from pyspark.basics.spark_basics import create_spark_session, create_dataframe_from_list, sample_data
-from pyspark.transformations.transformations import filter_greater_than, group_and_aggregate
-
-spark = create_spark_session("Transform-App")
-df = create_dataframe_from_list(spark, sample_data(), ["id", "name", "salary"])
-filtered = filter_greater_than(df, "salary", 55000)
-filtered.show()
-```
-
-## Run examples interactively
-
-This package includes a CLI example runner that demonstrates PySpark transformations.
-
-Run the examples as a Python package:
+Run all demonstrations or select a specific transformation category:
 
 ```bash
-export PYTHONPATH=$(pwd)
-python -m pyspark.transformations.run_examples --module map
-python -m pyspark.transformations.run_examples --module filter
-python -m pyspark.transformations.run_examples --module groupby
-python -m pyspark.transformations.run_examples --module window
-python -m pyspark.transformations.run_examples --module union
+# Run all transformation demonstrations
+python3 -m pyspark.transformations.run_examples --demo all
+
+# Run specific transformation categories
+python3 -m pyspark.transformations.run_examples --demo map
+python3 -m pyspark.transformations.run_examples --demo filter
+python3 -m pyspark.transformations.run_examples --demo groupby
+python3 -m pyspark.transformations.run_examples --demo join
+python3 -m pyspark.transformations.run_examples --demo broadcast
+python3 -m pyspark.transformations.run_examples --demo window
+python3 -m pyspark.transformations.run_examples --demo union
+```
+
+Or execute via the `examples.py` entry point:
+
+```bash
+python3 -m pyspark.transformations.examples --demo all
 ```

@@ -1,5 +1,7 @@
 # Python Basics
 
+> **Learning Path**: [Stage 01: Core Python Mastery](file:///Users/sagarshingare/Documents/python-mastery-repo/LEARNING_PATH.md#stage-01-core-python-mastery) ▸ **Step 1.1: Language Fundamentals**
+
 This folder contains foundational Python examples and concepts for developers who are building strong engineering fundamentals.
 
 ## Included topics

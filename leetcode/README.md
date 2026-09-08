@@ -1,69 +1,110 @@
 # LeetCode Solutions - Python
 
-A comprehensive collection of **300+ LeetCode problems** with production-level code, detailed explanations, and multiple solution approaches.
+> **Learning Path**: [Stage 03: LeetCode & Interview Practice](file:///Users/sagarshingare/Documents/python-mastery-repo/LEARNING_PATH.md#stage-03-leetcode--interview-practice) (Prerequisites: [Stage 01: Core Python](file:///Users/sagarshingare/Documents/python-mastery-repo/core_python), [Stage 02: DSA](file:///Users/sagarshingare/Documents/python-mastery-repo/dsa))
 
-## 📊 Problem Statistics
+A comprehensive, production-hardened suite of **300+ LeetCode problems** and **FAANG/Tier-1 Company Interview Tracks** with detailed algorithmic explanations, asymptotic complexity analysis, and modular CLI runners.
 
-| Difficulty | Count | Topics Covered |
-|------------|-------|-----------------|
-| **Easy** | 60+ | Arrays, Strings, Linked Lists, Trees, Stack, Queue, DP |
-| **Medium** | 80+ | Arrays, Strings, LL, Trees, Graphs, Backtracking, DP, Greedy |
-| **Hard** | 50+ | Advanced DP, Graph Algorithms, Interval DP, Regex, Serialization |
-| **Total** | **300+** | **15+ Algorithm Topics** |
+---
 
-## 🎯 Topics Covered
+## 📊 Problem & Track Statistics
 
-### Easy (60+ Problems)
-- **Arrays & Hashing**: Two Sum, Contains Duplicate, Valid Anagram, Top K Frequent, Product of Array, Valid Sudoku, Group Anagrams
-- **Strings**: Valid Palindrome, Reverse String, Ransom Note, Isomorphic Strings, Word Pattern, Encode/Decode Strings
-- **Linked Lists**: Reverse, Cycle Detection, Merge Two Lists, Palindrome, Add Two Numbers
-- **Trees & Graphs**: Invert Tree, Max Depth, Same Tree, Symmetric Tree, Lowest Common Ancestor, Balanced Tree
-- **Dynamic Programming**: Climbing Stairs, Pascal's Triangle, House Robber, Maximum Subarray, Best Time Buy/Sell, Unique Paths
-- **Stack & Queue**: Valid Parentheses, Min Stack, Implement Queue, Evaluate RPN
+| Module / Track | Path | Count | Key Focus Areas |
+|:---|:---|:---|:---|
+| **Step 3.1: Easy** | [`leetcode/easy/`](file:///Users/sagarshingare/Documents/python-mastery-repo/leetcode/easy) | 60+ problems | Two Pointers, In-place reversal, BFS/DFS basics, 1D DP, MinStack |
+| **Step 3.2: Medium** | [`leetcode/medium/`](file:///Users/sagarshingare/Documents/python-mastery-repo/leetcode/medium) | 80+ problems | Sliding Window, BST validation, Flood fill, 2D DP, Backtracking |
+| **Step 3.3: Hard** | [`leetcode/hard/`](file:///Users/sagarshingare/Documents/python-mastery-repo/leetcode/hard) | 50+ problems | Partition binary search, Monotonic stacks, LRU cache, Interval DP |
+| **Step 3.4: Company-Wise** | [`leetcode/company_wise/`](file:///Users/sagarshingare/Documents/python-mastery-repo/leetcode/company_wise) | 16 core tracks | High-frequency problems for Google, Meta, Amazon, Microsoft |
 
-### Medium (80+ Problems)
-- **Arrays & Hashing**: 3Sum, Container with Most Water, Set Matrix Zeroes, Spiral Matrix, Task Scheduler
-- **Strings**: Longest Substring, Longest Palindrome, Decode String, Basic Calculator II, Reverse Words
-- **Linked Lists**: Swap Pairs, Reverse II, Sort List, Intersection
-- **Trees & Graphs**: Level Order, Validate BST, Construct from Preorder/Inorder, Number of Islands
-- **Dynamic Programming**: Word Break, Longest Increasing Subsequence, Maximum Product Subarray, Partition Equal Subset
+---
 
-### Hard (50+ Problems)
-- **Arrays**: Median of Two Arrays, Trapping Rain Water, Find Median Data Stream, Largest Rectangle
-- **Strings**: Regular Expression Matching, Edit Distance, Sudoku Solver
-- **Linked Lists**: Reverse k-Group, Merge k Lists, LRU Cache
-- **Trees & Graphs**: Serialize/Deserialize, Max Path Sum, Word Search II
-- **Dynamic Programming**: Best Time Stock III/IV, Burst Balloons, Complex Interval DP
+## 🏢 Step 3.4: Company-Wise Interview Tracks
+
+Targeted interview tracks focusing on algorithmic patterns frequently tested at top technology firms:
+
+- **Google Track** ([`company_wise/google.py`](file:///Users/sagarshingare/Documents/python-mastery-repo/leetcode/company_wise/google.py)):
+  - **#359 Logger Rate Limiter**: Stream sliding window deduplication and timestamp caching
+  - **#904 Fruit Into Baskets**: At-most-2 distinct elements sliding window
+  - **#212 Word Search II**: Prefix Trie paired with recursive backtracking on 2D grids
+  - **#150 Evaluate Reverse Polish Notation**: Stack-based operand evaluation with truncation toward zero
+
+- **Meta Track** ([`company_wise/meta.py`](file:///Users/sagarshingare/Documents/python-mastery-repo/leetcode/company_wise/meta.py)):
+  - **#680 Valid Palindrome II**: Two-pointer fault-tolerant mismatch skipping
+  - **#1249 Minimum Remove to Make Valid Parentheses**: Dual-pass index set filtering
+  - **#560 Subarray Sum Equals K**: Cumulative prefix sum frequency hash map `O(N)`
+  - **#314 Binary Tree Vertical Order Traversal**: BFS column-coordinate tracking with left-to-right determinism
+
+- **Amazon Track** ([`company_wise/amazon.py`](file:///Users/sagarshingare/Documents/python-mastery-repo/leetcode/company_wise/amazon.py)):
+  - **#937 Reorder Data in Log Files**: Multi-key tuple sorting with stable fallback
+  - **#994 Rotting Oranges**: Multi-source BFS queue with elapsed step counting
+  - **#973 K Closest Points to Origin**: Max-heap bounding `O(N log K)` vs. QuickSelect
+  - **#1192 Critical Connections in a Network**: Tarjan's Bridge Finding with discovery/low-link timestamps
+
+- **Microsoft Track** ([`company_wise/microsoft.py`](file:///Users/sagarshingare/Documents/python-mastery-repo/leetcode/company_wise/microsoft.py)):
+  - **#59 Spiral Matrix II**: Boundary contraction matrix population
+  - **#1822 Sign of the Product of an Array**: Zero-check parity accumulation `O(1)` space
+  - **#151 Reverse Words in a String**: In-place sentence tokenization and word flipping
+  - **#25 Reverse Nodes in k-Group**: Pointer group reversal with dummy sentinel
+
+---
 
 ## 🏭 Production Use Cases
-This section connects each problem type to real-world engineering scenarios and shows how the algorithm patterns appear in production systems.
 
-### Easy Level Use Cases
-- **Arrays & Hashing**: used for fast lookups and deduplication when processing user events, logs, or database rows. Example: find duplicate IDs in a batch upload or compute the most frequent error code in logs.
-- **Strings**: used for input validation, normalization, and lightweight text processing. Example: check whether a search query is an anagram of a canonical keyword or clean user-generated content for storage.
-- **Linked Lists**: used in streaming pipelines and queue implementations where insertion/removal at both ends is frequent. Example: maintain a live ticket queue or merge sorted event streams.
-- **Trees & Graphs**: used for hierarchical data and simple navigation problems. Example: parse a JSON configuration tree, compute a folder depth, or validate relationship structure in an org chart.
-- **Dynamic Programming**: used for incremental planning and basic optimization. Example: calculate the best way to split a promotion budget over days or maximize returns on low-risk investments.
-- **Stack & Queue**: used for expression evaluation, undo/redo stacks, and request buffering. Example: evaluate a mathematical formula entered in a calculator app or implement an operation stack for editor history.
+Algorithms and data structure optimizations are mirrored in production software engineering:
 
-### Medium Level Use Cases
-- **Arrays & Hashing**: used for collision detection, sliding window analytics, and pattern search. Example: identify user sessions with matching purchase behaviors or find a contiguous sales period with target revenue.
-- **Strings**: used for parsing, tokenization, and advanced data cleansing. Example: reverse words in a search snippet, decode custom string payloads, or evaluate calculator expressions in a text field.
-- **Linked Lists**: used for modifying in-flight data streams and partial reordering. Example: swap segments in an event stream or reverse part of a linked batch of network packets.
-- **Trees & Graphs**: used for search, connectivity, and hierarchical operations on data graphs. Example: traverse API dependency graphs, validate access control hierarchies, or compute reachable services in a microservice topology.
-- **Dynamic Programming**: used for resource allocation, inventory planning, and segmentation. Example: compute whether an order list can be partitioned into equal-value shipments or find the longest sequence of maintainable deployments.
-- **Backtracking**: used for configuration generation and constraint satisfaction. Example: generate valid test plans, allocate rooms under constraints, or solve scheduling problems with backtracking.
+- **Arrays & Hashing**: In-memory caching, real-time rate limiting, event stream deduplication, and fast lookup tables.
+- **Strings & Parsing**: Query parsing, tokenization, serialization/deserialization protocols, and AST evaluation.
+- **Linked Lists**: Streaming buffer queues, LRU/LFU cache evictions, and low-latency packet sequencing.
+- **Trees & Graphs**: Dependency resolution, hierarchical RBAC trees, service mesh topology routing, and distributed cycle detection.
+- **Dynamic Programming**: Resource allocation, cost optimization, query execution plan costing, and network flow management.
 
-### Hard Level Use Cases
-- **Arrays**: used for real-time analytics, stream merging, and interval management. Example: maintain the median latency in a live monitoring dashboard or compute the maximum amount of rainwater trapped in terrain modeling.
-- **Strings**: used for advanced pattern matching, regex engines, and text diffing. Example: implement search filters using regular expression matching or calculate similarity/distance between document versions.
-- **Linked Lists**: used for cache design and complex data streaming. Example: build an LRU cache for hot database keys or merge multiple sorted message queues in a broker.
-- **Trees & Graphs**: used for serialization, routing, and path optimization. Example: serialize a tree to send over a network, compute maximum value paths in decision trees, or search a dictionary of valid terms.
-- **Dynamic Programming**: used for multi-stage optimization problems and strategic planning. Example: maximize profit across multiple trading windows, schedule advertising campaigns, or solve complex allocation of cloud resources.
+---
 
-## 🚀 Quick Start
+## 🚀 Execution & CLI Guide
 
-### Run All Problems
+### 1. Unified LeetCode Showcase
+Run representative problems across all tiers and company tracks:
 ```bash
-python -m leetcode.run_problems list
+python3 -m leetcode.examples
+```
+
+### 2. Interactive Problem Runner CLI
+Explore, inspect, run, and test individual problems:
+```bash
+# List problems by difficulty or category
+python3 -m leetcode.run_problems list --difficulty easy
+python3 -m leetcode.run_problems list --category "Dynamic Programming"
+
+# View problem statistics
+python3 -m leetcode.run_problems stats
+
+# Show problem description and solution approach
+python3 -m leetcode.run_problems show 1-two-sum
+
+# Run unit tests across a difficulty tier
+python3 -m leetcode.run_problems test easy
+python3 -m leetcode.run_problems test medium
+python3 -m leetcode.run_problems test hard
+```
+
+### 3. Submodule Runners
+Run topic-specific or company-specific demonstrations directly:
+```bash
+# Easy problems
+python3 -m leetcode.easy.run_examples --topic arrays
+python3 -m leetcode.easy.run_examples --topic all
+
+# Medium problems
+python3 -m leetcode.medium.run_examples --topic dp
+python3 -m leetcode.medium.run_examples --topic all
+
+# Hard problems
+python3 -m leetcode.hard.run_examples --topic dp_design
+python3 -m leetcode.hard.run_examples --topic all
+
+# Company-Wise tracks
+python3 -m leetcode.company_wise.run_examples --company google
+python3 -m leetcode.company_wise.run_examples --company meta
+python3 -m leetcode.company_wise.run_examples --company amazon
+python3 -m leetcode.company_wise.run_examples --company microsoft
+python3 -m leetcode.company_wise.run_examples --company all
 ```

@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+import functools
 import logging
 import time
+from collections.abc import Callable
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, Iterator
@@ -37,9 +39,10 @@ def log_scope(logger: logging.Logger, scope_name: str) -> Iterator[None]:
         logger.info("Exiting %s", scope_name)
 
 
-def time_execution(function: callable) -> callable:
+def time_execution(function: Callable[..., Any]) -> Callable[..., Any]:
     """Decorator that logs execution time for a function."""
 
+    @functools.wraps(function)
     def wrapper(*args: Any, **kwargs: Any) -> Any:
         start_time = time.perf_counter()
         result = function(*args, **kwargs)
@@ -48,6 +51,4 @@ def time_execution(function: callable) -> callable:
         logger.info("%s executed in %.6fs", function.__name__, duration)
         return result
 
-    wrapper.__name__ = function.__name__
-    wrapper.__doc__ = function.__doc__
     return wrapper

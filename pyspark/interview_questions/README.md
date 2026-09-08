@@ -1,126 +1,77 @@
-# PySpark Interview Questions & Coding Problems
+# PySpark Interview Questions, Architecture Tradeoffs & Coding Problems
 
-Comprehensive collection of PySpark interview questions, most asked topics, and LeetCode-style coding problems with detailed solutions.
+> **Learning Path**: [Stage 06: Distributed Big Data](file:///Users/sagarshingare/Documents/python-mastery-repo/LEARNING_PATH.md#stage-06-distributed-big-data) ▸ **Step 6.4: Spark Interview Prep & Lakehouse Tradeoffs**
+
+A comprehensive collection of PySpark interview questions, Lakehouse architectural tradeoffs (Apache Iceberg, Delta Lake, Apache Hudi), file format comparisons, performance tuning, and LeetCode-style coding problems with detailed solutions.
+
+---
 
 ## Coverage
 
-### Fundamental Concepts
-- RDD vs DataFrame (when to use each, performance differences)
-- Catalyst Optimizer (stages, optimization strategies, query optimization)
-- Spark Shuffle (performance impact, cost, mitigation)
-- Lazy Evaluation (why Spark uses it, transformations vs actions)
-- Partitioning concepts and best practices
+### 1. Lakehouse & Ecosystem Tradeoffs (`Architecture_Tradeoffs`)
+- **Open Table Formats: Apache Iceberg vs Delta Lake vs Apache Hudi**:
+  - *Metadata Architecture*: Iceberg hierarchical snapshot tree (`metadata.json` -> manifest list -> manifest files -> data files) vs Delta linear transaction log (`_delta_log/*.json` + checkpoint Parquet) vs Hudi timeline service (`.hoodie/`).
+  - *Hidden Partitioning*: Iceberg's query-transparent partition transforms (`days(ts)`, `bucket(16, id)`) and partition evolution without data rewrites vs Hive directory structures (`date=2024-01-01/`).
+  - *Mutation & Concurrency*: Copy-on-Write (CoW) vs Merge-on-Read (MoR) with deletion vectors, positional deletes, and equality deletes.
+  - *Multi-Engine Neutrality*: Iceberg's catalog-first design across Spark, Trino, Flink, DuckDB, Snowflake, BigQuery vs Delta's deep Databricks/Spark integration.
+- **File Formats: Parquet vs ORC vs Avro**:
+  - Parquet (columnar, Dremel nested shredding, dictionary/RLE encoding, predicate pushdown) for analytical queries.
+  - ORC (Optimized Row Columnar with stripe-level indexes) for Hive/Trino.
+  - Avro (row-oriented binary with JSON schema) for Kafka/streaming ingestion and low-latency writes.
+- **Partition Management: Repartition vs Coalesce**:
+  - Full network shuffle with balanced hash partitions vs local partition merging without shuffle (and the risk of partition skew).
+- **Execution & Join Strategies**:
+  - Broadcast Hash Join (BHJ) vs Shuffle Hash Join (SHJ) vs Sort-Merge Join (SMJ) vs Cartesian/BNL.
+  - Data skew mitigation: Salting hot keys vs Spark 3+ Adaptive Query Execution (AQE).
+- **Medallion Architecture Tradeoffs**:
+  - Bronze (Raw landing, immutable audit) vs Silver (Cleansed, conformant, deduplicated) vs Gold (Aggregated business star-schemas). Storage volume vs pipeline latency vs replayability.
 
-### Partitioning & Optimization
-- Optimal partition count calculation
-- Bucketing strategy and advantages
-- Skewed data handling
-- Partition pruning
-- Co-partitioning for joins
+### 2. Fundamental Concepts (`PySpark_Fundamentals`)
+- RDD vs DataFrame (abstraction levels, Catalyst optimization, 10-100x speedup)
+- Catalyst Optimizer (Parsing -> Analyzing -> Logical Optimization -> Physical Planning -> Code Generation)
+- Spark Shuffle (Exchange boundaries, network I/O, spills, and mitigation)
+- Lazy Evaluation (DAG construction, optimization windows, execution triggers)
 
-### Memory & Caching
-- Caching strategies and storage levels
-- Broadcast vs Shuffle joins
-- Memory management tuning
-- GC optimization
-- Out of memory issues
+### 3. Partitioning & Memory Optimization (`Partitioning_Strategy`, `Memory_Management`)
+- Optimal partition count calculation (`cores * 2 to 4`, ~128MB rule)
+- Bucketing strategy and pre-sorted shuffle elimination
+- Unified Memory Management (Storage vs Execution fraction, dynamic borrowing)
+- Caching levels (`MEMORY_ONLY`, `MEMORY_AND_DISK_SER`, `OFF_HEAP`)
 
-### Most Asked Interview Questions
-1. **Lazy Evaluation** - What it is and why Spark uses it
-2. **DataFrame vs RDD** - When to use which
-3. **Memory Issues** - How to fix OutOfMemoryError
-4. **Skewed Data** - Data skew handling techniques
-5. **Join Performance** - Optimizing join operations
+### 4. Most Asked Interview Questions (`Most_Asked_Questions`)
+1. **Lazy Evaluation** - Why Spark postpones computation until action triggers
+2. **DataFrame vs RDD** - When to drop to low-level RDD vs high-level DataFrame
+3. **Memory Issues** - Diagnosing and resolving Driver OOM vs Executor OOM
+4. **Skewed Data** - Identifying straggler tasks and applying salting / AQE
+5. **Join Performance** - Choosing the optimal join strategy
 
-### Coding Problems (LeetCode Style)
-1. **Top N Salary** - Find top earners per department (Window functions)
-2. **Duplicate Emails** - Find duplicate emails (GroupBy)
-3. **Second Highest Salary** - Find 2nd highest unique salary (Window ranking)
-4. **Cumulative Sum** - Running total over time (Window aggregation)
-5. **Top K Frequent** - Find K most frequent elements (GroupBy + Sort)
+### 5. Coding Problems (LeetCode Style) (`Coding_Problems`)
+1. **Top N Salary** - Highest earners per department via window `row_number()`
+2. **Duplicate Emails** - GroupBy and window counting filter
+3. **Second Highest Salary** - Handling ties and NULLs with `dense_rank()`
+4. **Cumulative Sum** - Running transactions balance with `rowsBetween`
+5. **Top K Frequent** - GroupBy aggregation and sorting
 
-### Performance Tuning
-- SQL vs DataFrame API
-- Reading and interpreting explain() plans
-- Query optimization patterns
-- Common performance bottlenecks
-- Monitoring and debugging
+### 6. Performance Tuning (`Performance_Tuning`)
+- SQL vs DataFrame API execution equivalence
+- Interpreting `df.explain(True)` physical plans, filters, and exchange nodes
 
-## Python version
+---
 
-Python 3.9+ with PySpark 3.5+
+## Interactive Command-Line Demos
 
-## Key Learning Outcomes
-
-- Understand PySpark architecture and execution model
-- Master optimization techniques for production systems
-- Know when and how to use different join strategies
-- Handle real-world performance challenges
-- Ace technical interviews
-
-## Run Examples
-
-Interactive CLI with all questions and problems:
+Run all questions and tradeoffs, or focus on a specific module:
 
 ```bash
-export PYTHONPATH=$(pwd)
+# Run all topics including Lakehouse tradeoffs
+python3 -m pyspark.interview_questions.run_examples --demo all
 
-# Run specific topics
-python -m pyspark.interview_questions.run_examples --module fundamentals
-python -m pyspark.interview_questions.run_examples --module partitioning
-python -m pyspark.interview_questions.run_examples --module memory
-python -m pyspark.interview_questions.run_examples --module most_asked
-python -m pyspark.interview_questions.run_examples --module coding_problems
-python -m pyspark.interview_questions.run_examples --module performance
-
-# Run all
-python -m pyspark.interview_questions.run_examples
-python -m pyspark.interview_questions.run_examples --module all
+# Run specific topic demonstrations
+python3 -m pyspark.interview_questions.run_examples --demo tradeoffs
+python3 -m pyspark.interview_questions.run_examples --demo fundamentals
+python3 -m pyspark.interview_questions.run_examples --demo partitioning
+python3 -m pyspark.interview_questions.run_examples --demo memory
+python3 -m pyspark.interview_questions.run_examples --demo most_asked
+python3 -m pyspark.interview_questions.run_examples --demo coding_problems
+python3 -m pyspark.interview_questions.run_examples --demo performance
 ```
-
-## Topics by Difficulty
-
-### Beginner
-- RDD vs DataFrame
-- Basic partitioning
-- Cache operations
-- Lazy evaluation
-
-### Intermediate
-- Catalyst optimizer
-- Join strategies
-- Window functions
-- Partitioning optimization
-
-### Advanced
-- Data skew handling
-- Memory tuning
-- Shuffle optimization
-- Query plan analysis
-- Distributed computing concepts
-
-## Real Interview Tips
-
-1. **Prepare code examples** - Have concrete examples ready
-2. **Understand the "why"** - Not just how, but why you choose solutions
-3. **Think about trade-offs** - Every optimization has costs
-4. **Ask clarifying questions** - Data size, frequency, SLA
-5. **Discuss monitoring** - How would you know if it works
-6. **Consider alternatives** - What if requirements change
-
-## Common Pitfalls to Avoid
-
-- ❌ Using RDD for structured data (use DataFrame)
-- ❌ Forgetting to handle NULL values
-- ❌ Not considering data skew in joins
-- ❌ Caching too aggressively (memory issues)
-- ❌ Using collect() on large DataFrames
-- ❌ Not using broadcast join for small tables
-- ❌ Ignoring partition count tuning
-
-## Resource Links
-
-- [Apache Spark Documentation](https://spark.apache.org/docs/latest/)
-- [PySpark API](https://spark.apache.org/docs/latest/api/python/)
-- [Spark Performance Tuning](https://spark.apache.org/docs/latest/tuning.html)
-- [Catalyst Optimizer](https://spark.apache.org/docs/latest/sql-catalyst-optimizer.html)

@@ -1,61 +1,70 @@
 """Run Python generator examples with a simple CLI."""
 
 from __future__ import annotations
-
 import argparse
 import logging
-from pathlib import Path
-
 from core_python.generators.generator_examples import (
     chunked_generator,
     fibonacci_generator,
     filter_generator,
+    flatten_nested,
     normalized_strings,
+    run_pipeline,
+    running_average,
 )
 
 logger = logging.getLogger(__name__)
 
 
-def run_fibonacci_examples() -> None:
-    """Demonstrate fibonacci generator."""
-    logger.info("Running fibonacci generator examples")
+def run_basic_examples() -> None:
+    """Demonstrate basic generator functions."""
+    logger.info("Running basic generator examples")
 
-    print("Fibonacci numbers up to 50:")
-    fib_gen = fibonacci_generator(50)
-    print(list(fib_gen))
+    print("Fibonacci numbers <= 20:")
+    for num in fibonacci_generator(20):
+        print(f"  {num}")
 
-
-def run_chunked_examples() -> None:
-    """Demonstrate chunked generator."""
-    logger.info("Running chunked generator examples")
-
-    data = list(range(1, 11))  # [1, 2, 3, ..., 10]
-    print(f"Original data: {data}")
-    print("Chunked into groups of 3:")
+    print("\nChunked generator:")
+    data = list(range(10))
     for chunk in chunked_generator(data, 3):
-        print(chunk)
+        print(f"  Chunk: {chunk}")
+
+    print("\nFilter generator (even numbers):")
+    evens = filter_generator(range(10), lambda x: x % 2 == 0)
+    print(f"  Evens: {list(evens)}")
+
+    print("\nNormalized strings:")
+    raw = ["  Hello  ", "WORLD\n", "\ttEsT  "]
+    print(f"  Clean: {list(normalized_strings(raw))}")
 
 
-def run_filter_examples() -> None:
-    """Demonstrate filter generator."""
-    logger.info("Running filter generator examples")
+def run_flatten_and_coroutine_examples() -> None:
+    """Demonstrate yield from recursion and coroutine two-way communication."""
+    logger.info("Running flatten and coroutine examples")
 
-    numbers = list(range(1, 21))  # [1, 2, ..., 20]
-    print(f"Original numbers: {numbers}")
-    print("Even numbers only:")
-    even_gen = filter_generator(numbers, lambda x: x % 2 == 0)
-    print(list(even_gen))
+    # 1. Recursive yield from
+    nested = [1, [2, [3, 4], 5], [[6]], 7]
+    flattened = list(flatten_nested(nested))
+    print(f"Nested {nested} -> Flattened: {flattened}")
+    assert flattened == [1, 2, 3, 4, 5, 6, 7]
+
+    # 2. Coroutine send / running average
+    avg_gen = running_average()
+    next(avg_gen)  # Prime the generator to first yield
+    print("Running average coroutine:")
+    print("  Sent 10 -> Avg:", avg_gen.send(10))
+    print("  Sent 20 -> Avg:", avg_gen.send(20))
+    print("  Sent 30 -> Avg:", avg_gen.send(30))
+    avg_gen.close()
 
 
-def run_normalized_strings_examples() -> None:
-    """Demonstrate normalized strings generator."""
-    logger.info("Running normalized strings examples")
-
-    messy_strings = ["  Hello  ", "WORLD", "  python  ", "GeNeRaToRs"]
-    print(f"Original strings: {messy_strings}")
-    print("Normalized strings:")
-    normalized_gen = normalized_strings(messy_strings)
-    print(list(normalized_gen))
+def run_streaming_pipeline_examples() -> None:
+    """Demonstrate memory-efficient multi-stage pipeline."""
+    logger.info("Running streaming pipeline examples")
+    results = run_pipeline(6)
+    print(f"Pipeline processed {len(results)} events:")
+    for r in results:
+        print(f"  Event #{r['id']}: amount={r['amount']}, total_with_tax={r['total_with_tax']}")
 
 
 def main() -> None:
@@ -63,31 +72,27 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Run Python generator examples")
     parser.add_argument(
         "--module",
-        choices=["fibonacci", "chunked", "filter", "normalized"],
+        choices=["basic", "coroutine", "pipeline", "all"],
+        default="all",
         help="Specific module to run examples for",
     )
     args = parser.parse_args()
 
-    # Configure logging
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     )
 
-    if args.module == "fibonacci":
-        run_fibonacci_examples()
-    elif args.module == "chunked":
-        run_chunked_examples()
-    elif args.module == "filter":
-        run_filter_examples()
-    elif args.module == "normalized":
-        run_normalized_strings_examples()
+    if args.module == "basic":
+        run_basic_examples()
+    elif args.module == "coroutine":
+        run_flatten_and_coroutine_examples()
+    elif args.module == "pipeline":
+        run_streaming_pipeline_examples()
     else:
-        # Run all examples
-        run_fibonacci_examples()
-        run_chunked_examples()
-        run_filter_examples()
-        run_normalized_strings_examples()
+        run_basic_examples()
+        run_flatten_and_coroutine_examples()
+        run_streaming_pipeline_examples()
 
 
 if __name__ == "__main__":

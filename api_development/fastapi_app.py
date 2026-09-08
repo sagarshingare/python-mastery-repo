@@ -42,9 +42,9 @@ def health_check() -> dict[str, str]:
 @app.post("/predict", response_model=PredictionResponse, summary="Predict a score from request data")
 def predict(payload: PredictionRequest) -> PredictionResponse:
     """Example prediction endpoint demonstrating request validation and business logic."""
-    logger.info("Received prediction request: %s", payload.dict())
+    logger.info("Received prediction request: %s", payload.model_dump())
     score = payload.feature_a * 0.4 + payload.feature_b * 0.6
     decision = "approve" if score >= 0.5 else "decline"
     response = PredictionResponse(score=round(score, 4), decision=decision, version="0.1.0")
-    logger.info("Prediction response: %s", response.json())
+    logger.info("Prediction response: %s", response.model_dump_json())
     return response

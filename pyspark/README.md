@@ -1,107 +1,87 @@
-# PySpark Data Processing
+# Stage 06: Distributed Big Data (PySpark)
 
-A comprehensive collection of PySpark examples for Apache Spark development with Python. This module covers core data processing concepts from basics to advanced optimization techniques.
+> **Learning Path**: [Stage 06: Distributed Big Data](file:///Users/sagarshingare/Documents/python-mastery-repo/LEARNING_PATH.md#stage-06-distributed-big-data) (Prerequisites: [Stage 01: Core Python](file:///Users/sagarshingare/Documents/python-mastery-repo/core_python), [Stage 04: SQL Mastery](file:///Users/sagarshingare/Documents/python-mastery-repo/sql), [Stage 05: Data Analytics](file:///Users/sagarshingare/Documents/python-mastery-repo/pandas_lib))
 
-## Included topics
+A production-grade collection of Apache Spark and PySpark engineering modules covering session orchestration, DataFrame operations, narrow vs wide transformations, broadcast joins, window analytics, distributed file persistence (Parquet, CSV, JSON), partition pruning, and Catalyst query optimization.
 
-- **basics** - SparkSession, DataFrames, schema definition, basic operations
-- **transformations** - Map, filter, groupBy, window functions, union operations
-- **spark_sql** - SQL queries, temporary tables, DataFrame SQL operations
-- **streaming** - Structured streaming, event processing
-- **partitioning** - Partition strategies, optimization, bucketing
-- **optimization** - Caching, broadcasting, query optimization
-- **delta_lake** - Delta Lake tables, ACID transactions
-- **actions** - Collect, count, save, write operations
+---
 
-## Python version
+## Curriculum Steps
 
-This module is written for Python 3.9+ and requires PySpark 3.5+.
+| Step | Submodule | Key Capabilities |
+|:-----|:----------|:-----------------|
+| **Step 6.1** | [`basics/`](file:///Users/sagarshingare/Documents/python-mastery-repo/pyspark/basics) | SparkSession lifecycle (`master("local[1]")`, resource safety), `StructType` schema definitions, DataFrame ingestion from lists & dicts, metadata inspection, and column filtering. |
+| **Step 6.2** | [`transformations/`](file:///Users/sagarshingare/Documents/python-mastery-repo/pyspark/transformations) | Narrow transformations (in-memory map, filter, column derivation) vs wide transformations (groupBy, shuffle joins), Broadcast Hash Joins (`broadcast(small_df)`), and window analytical functions (`row_number()`, `dense_rank()`, cumulative sums). |
+| **Step 6.3** | [`actions/`](file:///Users/sagarshingare/Documents/python-mastery-repo/pyspark/actions) | Action evaluation DAG triggers (`collect()`, `count()`, `take()`, `first()`), driver memory management, statistical profiling (`summary()`), multi-format persistence (Parquet, CSV, JSON), and partitioned directory sinks (`partitionBy()`). |
+| **Step 6.4** | [`interview_questions/`](file:///Users/sagarshingare/Documents/python-mastery-repo/pyspark/interview_questions) | Catalyst optimizer pipeline (Parsed -> Analyzed -> Optimized -> Physical Plan), shuffle internals, partition tuning, memory storage vs execution pools, Lakehouse table formats (Apache Iceberg vs Delta Lake vs Apache Hudi, hidden partitioning, CoW vs MoR), storage formats (Parquet vs ORC vs Avro), and 5 LeetCode-style Spark coding problems. |
 
-## Prerequisites
+---
 
-```bash
-pip install pyspark>=3.5.0
-```
-
-## Learning outcomes
-
-- Understand Apache Spark architecture and RDDs
-- Create and manipulate DataFrames efficiently
-- Write optimized Spark SQL queries
-- Process streaming data in real-time
-- Implement data partitioning strategies
-- Optimize Spark jobs for performance
-- Use Delta Lake for reliable data processing
-- Handle large-scale data processing tasks
-
-## Quick start
+## Quick Start
 
 ```python
-from pyspark.basics.spark_basics import create_spark_session, create_dataframe_from_list, sample_data
+from pyspark.basics.spark_basics import create_spark_session, create_dataframe_from_list, sample_data, define_custom_schema
+from pyspark.transformations.transformations import broadcast_join, apply_window_function
+from pyspark.actions.actions import write_partitioned, summarize_dataframe, stop_spark_session
 
-# Create SparkSession
-spark = create_spark_session("MyApp")
+# 1. Initialize local SparkSession
+spark = create_spark_session("QuickStartApp")
 
-# Create DataFrame
-data = sample_data()
-df = create_dataframe_from_list(spark, data, ["id", "name", "salary"])
+try:
+    # 2. Ingest DataFrame with explicit schema
+    schema = define_custom_schema()
+    df = create_dataframe_from_list(spark, sample_data(), schema=schema)
+    df.show()
 
-# Display data
-df.show()
+    # 3. Apply window ranking
+    ranked_df = apply_window_function(df, partition_col="department", order_col="salary")
+    ranked_df.show()
+
+    # 4. Generate statistical summary
+    summary_df = summarize_dataframe(df)
+    summary_df.show()
+finally:
+    stop_spark_session(spark)
 ```
 
-## Run learning modules
+---
 
-Each module includes interactive examples:
+## Interactive Command-Line Demonstrations
+
+### Master Runner (All Submodules)
+
+Run all submodules sequentially through the unified entry point:
 
 ```bash
-export PYTHONPATH=$(pwd)
+# Run all Stage 06 demonstrations
+python3 -m pyspark.run_examples --submodule all
 
-# Basics
-python -m pyspark.basics.run_examples --module spark_session
-python -m pyspark.basics.run_examples --module dataframe
-
-# Transformations
-python -m pyspark.transformations.run_examples --module filter
-python -m pyspark.transformations.run_examples --module groupby
-
-# More modules...
+# Or run via the entry point alias
+python3 -m pyspark.examples --submodule all
 ```
 
-## Module structure
-
-```
-pyspark/
-├── basics/                    # DataFrame creation and basic operations
-├── transformations/           # Map, filter, aggregations
-├── spark_sql/                 # SQL operations
-├── streaming/                 # Real-time data processing
-├── partitioning/              # Partition optimization
-├── optimization/              # Performance tuning
-├── delta_lake/                # Delta Lake tables
-└── actions/                   # Collect, save operations
-```
-
-## Best practices
-
-1. **Always use DataFrames** over RDDs for better performance
-2. **Cache intermediate results** to avoid recomputation
-3. **Use Spark SQL** for complex queries
-4. **Partition data efficiently** for parallel processing
-5. **Monitor and optimize** job execution
-6. **Use Delta Lake** for reliable data storage
-
-## Testing
-
-Run tests using pytest:
+### Individual Submodules
 
 ```bash
-export PYTHONPATH=$(pwd)
-pytest testing/pytest/test_pyspark*.py -v
+# Step 6.1: Spark Basics
+python3 -m pyspark.basics.run_examples --demo all
+
+# Step 6.2: Spark Transformations
+python3 -m pyspark.transformations.run_examples --demo all
+
+# Step 6.3: Spark Actions & Sinks
+python3 -m pyspark.actions.run_examples --demo all
+
+# Step 6.4: Spark Interview Prep & Optimization
+python3 -m pyspark.interview_questions.run_examples --demo all
 ```
 
-## Resources
+---
 
-- [Apache Spark Documentation](https://spark.apache.org/docs/latest/)
-- [PySpark API Documentation](https://spark.apache.org/docs/latest/api/python/)
-- [Delta Lake Documentation](https://docs.delta.io/)
+## Automated Verification
+
+Execute the comprehensive PySpark test suite:
+
+```bash
+python3 -m pytest testing/pytest/test_pyspark_suite.py -v
+```

@@ -1,50 +1,50 @@
 # PySpark Basics
 
-This folder contains foundational PySpark examples and concepts for working with Apache Spark using Python.
+> **Learning Path**: [Stage 06: Distributed Big Data](file:///Users/sagarshingare/Documents/python-mastery-repo/LEARNING_PATH.md#stage-06-distributed-big-data) ▸ **Step 6.1: Spark Basics**
 
-## Included topics
+This module contains foundational Apache Spark and PySpark examples, covering session creation, DataFrame ingestion, schema definitions, and DataFrame inspection.
 
-- `spark_basics.py` - SparkSession, DataFrames, schema definition, and basic operations
+---
 
-## Python version
+## Key Concepts & Implementation
 
-This module is written for Python 3.9+ and requires PySpark 3.5+.
+- **SparkSession Lifecycle**: Creating isolated local sessions (`master("local[1]")`, disabling UI to minimize resource overhead) and stopping contexts cleanly.
+- **Custom Schema Definition**: Building `StructType` and `StructField` instances with native PySpark types (`IntegerType`, `StringType`, `DoubleType`).
+- **DataFrame Ingestion**: Creating DataFrames from Python lists of tuples and dictionaries.
+- **Metadata Inspection**: Schema printing, `.dtypes`, `.columns`, row counts, and sample display.
+- **Projections & Filtering**: Column selection and row filtering with SQL expressions and column predicates.
 
-## Learning outcomes
+---
 
-- Create and configure SparkSession
-- Create DataFrames from various sources
-- Define and apply custom schemas
-- Perform basic DataFrame operations (filter, select)
-- Inspect DataFrame metadata
-- Work with PySpark efficiently
+## Files
 
-## Usage
+| File | Description |
+|------|-------------|
+| `spark_basics.py` | SparkSession lifecycle, schemas, DataFrame creation, and basic filtering |
+| `run_examples.py` | Command-line demo runner with `--demo` selector |
+| `examples.py` | Standard entry point alias for CLI execution |
+| `__init__.py` | Public API exports for `pyspark.basics` |
 
-Import the PySpark basics functions from `pyspark.basics` and use them in your applications.
+---
 
-Example:
+## Interactive Demos
 
-```python
-from pyspark.basics.spark_basics import create_spark_session, create_dataframe_from_list, sample_data
-
-spark = create_spark_session("MyApp")
-data = sample_data()
-df = create_dataframe_from_list(spark, data, ["id", "name", "salary"])
-df.show()
-```
-
-## Run examples interactively
-
-This package includes a CLI example runner that demonstrates PySpark basics concepts.
-
-Run the examples as a Python package:
+Run all demonstrations or focus on a specific concept:
 
 ```bash
-export PYTHONPATH=$(pwd)
-python -m pyspark.basics.run_examples --module spark_session
-python -m pyspark.basics.run_examples --module dataframe
-python -m pyspark.basics.run_examples --module inspect
-python -m pyspark.basics.run_examples --module filter
-python -m pyspark.basics.run_examples --module select
+# Run all basic Spark demonstrations
+python3 -m pyspark.basics.run_examples --demo all
+
+# Run specific demonstrations
+python3 -m pyspark.basics.run_examples --demo session
+python3 -m pyspark.basics.run_examples --demo dataframe
+python3 -m pyspark.basics.run_examples --demo inspect
+python3 -m pyspark.basics.run_examples --demo filter
+python3 -m pyspark.basics.run_examples --demo select
+```
+
+Or execute via the `examples.py` entry point:
+
+```bash
+python3 -m pyspark.basics.examples --demo all
 ```

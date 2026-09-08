@@ -20,10 +20,30 @@ A production-grade, enterprise-ready repository for Python mastery. This reposit
 - Docker, CI/CD, and monitoring
 - Interview notes and architectural guidance
 
+## Learning Path & Curriculum
+
+Follow the structured 11-stage learning sequence designed to take you from core Python foundations to advanced distributed computing and microservices:
+
+> 📘 **Full Curriculum Guide**: See [**`LEARNING_PATH.md`**](file:///Users/sagarshingare/Documents/python-mastery-repo/LEARNING_PATH.md) for the complete roadmap, module details, and prerequisites.
+
+| Stage | Sequence | Directory | Description |
+|:---:|:---|:---|:---|
+| **01** | **Core Python** | [`core_python/`](file:///Users/sagarshingare/Documents/python-mastery-repo/core_python) | Fundamentals, OOP, Iterators, Generators, Typing, Concurrency |
+| **02** | **DSA** | [`dsa/`](file:///Users/sagarshingare/Documents/python-mastery-repo/dsa) | Data structures & algorithms (Arrays to System Design DSA) |
+| **03** | **LeetCode** | [`leetcode/`](file:///Users/sagarshingare/Documents/python-mastery-repo/leetcode) | Algorithmic interview problem practice & CLI runner |
+| **04** | **SQL** | [`sql/`](file:///Users/sagarshingare/Documents/python-mastery-repo/sql) | Fundamentals, Joins, Window Functions, CTEs, Optimization |
+| **05** | **Data Analytics** | [`numpy_lib/`](file:///Users/sagarshingare/Documents/python-mastery-repo/numpy_lib), [`pandas_lib/`](file:///Users/sagarshingare/Documents/python-mastery-repo/pandas_lib), [`statistics/`](file:///Users/sagarshingare/Documents/python-mastery-repo/statistics) | Numerical arrays, DataFrame transformations, Statistics |
+| **06** | **Big Data** | [`pyspark/`](file:///Users/sagarshingare/Documents/python-mastery-repo/pyspark) | Apache Spark, DataFrames, Transformations & Actions |
+| **07** | **Testing** | [`testing/`](file:///Users/sagarshingare/Documents/python-mastery-repo/testing) | Pytest, Mocking, In-memory DB Fixtures, Micro-benchmarking |
+| **08** | **API Development** | [`api_development/`](file:///Users/sagarshingare/Documents/python-mastery-repo/api_development) | FastAPI, Flask, JWT, Rate Limiting, Production Observability |
+| **09** | **Cloud** | [`cloud/`](file:///Users/sagarshingare/Documents/python-mastery-repo/cloud) | AWS, Azure, Databricks Lakehouse, Snowflake |
+| **10** | **Projects** | [`projects/`](file:///Users/sagarshingare/Documents/python-mastery-repo/projects) | Production batch ETL pipelines, Customer 360, Streaming |
+| **11** | **Interview & Docs**| [`interview_prep/`](file:///Users/sagarshingare/Documents/python-mastery-repo/interview_prep), [`docs/`](file:///Users/sagarshingare/Documents/python-mastery-repo/docs) | Architecture diagrams, cheatsheets, system design prep |
+
 ## Getting started
 
 1. Clone the repository:
-ð
+
 ```bash
 git clone <repo-url>
 cd python-mastery-repo

@@ -1,5 +1,7 @@
 # Python Generators
 
+> **Learning Path**: [Stage 01: Core Python Mastery](file:///Users/sagarshingare/Documents/python-mastery-repo/LEARNING_PATH.md#stage-01-core-python-mastery) ▸ **Step 1.4: Generators & Streams**
+
 This folder contains examples of generator functions and lazy evaluation patterns in Python.
 
 ## Included topics

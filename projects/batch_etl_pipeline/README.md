@@ -1,5 +1,7 @@
 # Batch ETL Pipeline
 
+> **Learning Path**: [Stage 10: End-to-End Production Projects](file:///Users/sagarshingare/Documents/python-mastery-repo/LEARNING_PATH.md#stage-10-end-to-end-production-projects) ▸ **Step 10.1: Batch ETL Pipeline**
+
 This example demonstrates a configuration-driven batch ETL pipeline using pandas and YAML configuration.
 
 ## Features

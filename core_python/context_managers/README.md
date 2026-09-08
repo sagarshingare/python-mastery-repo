@@ -1,5 +1,7 @@
 # Python Context Managers
 
+> **Learning Path**: [Stage 01: Core Python Mastery](file:///Users/sagarshingare/Documents/python-mastery-repo/LEARNING_PATH.md#stage-01-core-python-mastery) ▸ **Step 1.6: Context Managers**
+
 This folder contains examples of context managers for safe resource handling in Python.
 
 ## Included topics

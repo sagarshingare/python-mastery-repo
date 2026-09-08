@@ -1,28 +1,21 @@
-"""PySpark basics - DataFrames, RDDs, and fundamental operations.
-
-This module demonstrates core PySpark concepts including:
-- SparkSession initialization and configuration
-- Creating DataFrames from various sources
-- Basic DataFrame operations
-- Schema definition and manipulation
-- DataFrame display and inspection
-
-Python version: 3.9+
-"""
+"""PySpark basics - SparkSession, DataFrames, and fundamental operations."""
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Dict, List, Optional
+import logging
+from typing import Any, Dict, List, Optional, Tuple
 
-if TYPE_CHECKING:
-    from pyspark.sql import SparkSession, DataFrame
-else:
-    SparkSession = Any  # type: ignore
-    DataFrame = Any  # type: ignore
+logger = logging.getLogger(__name__)
 
 try:
-    from pyspark.sql import SparkSession, DataFrame
-    from pyspark.sql.types import StructType, StructField, StringType, IntegerType, DoubleType
+    from pyspark.sql import DataFrame, SparkSession
+    from pyspark.sql.types import (
+        DoubleType,
+        IntegerType,
+        StringType,
+        StructField,
+        StructType,
+    )
     HAS_PYSPARK = True
 except ImportError:
     HAS_PYSPARK = False
@@ -33,143 +26,107 @@ except ImportError:
     StringType = None  # type: ignore
     IntegerType = None  # type: ignore
     DoubleType = None  # type: ignore
-    StructType = None  # type: ignore
 
 
-def create_spark_session(app_name: str = "PySpark-Basics") -> Any:
-    """Create and return a SparkSession.
-    
-    Args:
-        app_name: Name of the Spark application.
-        
-    Returns:
-        SparkSession instance or None if PySpark is not installed.
-    """
-    if SparkSession is None:
+def create_spark_session(app_name: str = "PySpark-Basics", master: str = "local[1]") -> Optional[SparkSession]:
+    """Create and return a configured local SparkSession."""
+    if not HAS_PYSPARK or SparkSession is None:
+        logger.warning("PySpark is not installed or available.")
         return None
-    
-    return (SparkSession.builder
+
+    try:
+        spark = (
+            SparkSession.builder
             .appName(app_name)
-            .master("local[*]")
-            .getOrCreate())
+            .master(master)
+            .config("spark.ui.enabled", "false")
+            .config("spark.sql.shuffle.partitions", "2")
+            .getOrCreate()
+        )
+        spark.sparkContext.setLogLevel("WARN")
+        return spark
+    except Exception as exc:
+        logger.error("Failed to initialize SparkSession: %s", exc)
+        return None
 
 
-def create_dataframe_from_list(spark: Any, 
-                               data: List[tuple],
-                               schema: List[str]) -> Any:
-    """Create a DataFrame from a list of tuples.
-    
-    Args:
-        spark: SparkSession instance.
-        data: List of tuples representing rows.
-        schema: List of column names.
-        
-    Returns:
-        DataFrame or None if spark is None.
-    """
+def stop_spark_session(spark: Optional[SparkSession]) -> None:
+    """Safely stop an active SparkSession."""
+    if spark is not None:
+        try:
+            spark.stop()
+        except Exception as exc:
+            logger.debug("Error while stopping SparkSession: %s", exc)
+
+
+def create_dataframe_from_list(
+    spark: Optional[SparkSession],
+    data: List[tuple],
+    schema: List[str] | StructType,
+) -> Optional[DataFrame]:
+    """Create a DataFrame from a list of tuples with given schema."""
     if spark is None:
         return None
-    
     return spark.createDataFrame(data, schema=schema)
 
 
-def create_dataframe_from_dict(spark: Any,
-                               data: List[Dict[str, Any]]) -> Any:
-    """Create a DataFrame from a list of dictionaries.
-    
-    Args:
-        spark: SparkSession instance.
-        data: List of dictionaries.
-        
-    Returns:
-        DataFrame or None if spark is None.
-    """
+def create_dataframe_from_dict(
+    spark: Optional[SparkSession],
+    data: List[Dict[str, Any]],
+) -> Optional[DataFrame]:
+    """Create a DataFrame from a list of dictionaries."""
     if spark is None:
         return None
-    
     return spark.createDataFrame(data)
 
 
-def define_custom_schema() -> Any:
-    """Define a custom schema for a DataFrame.
-    
-    Returns:
-        StructType schema or None if PySpark is not installed.
-    """
-    if StructType is None:
+def define_custom_schema() -> Optional[StructType]:
+    """Define a strongly-typed StructType schema for employee records."""
+    if not HAS_PYSPARK or StructType is None:
         return None
-    
-    schema = StructType([
-        StructField("id", IntegerType(), True),
-        StructField("name", StringType(), True),
-        StructField("salary", DoubleType(), True),
+
+    return StructType([
+        StructField("id", IntegerType(), nullable=False),
+        StructField("name", StringType(), nullable=True),
+        StructField("department", StringType(), nullable=True),
+        StructField("salary", DoubleType(), nullable=True),
     ])
-    
-    return schema
 
 
-def inspect_dataframe(df: Any) -> Dict[str, Any]:
-    """Inspect a DataFrame and return metadata.
-    
-    Args:
-        df: DataFrame to inspect.
-        
-    Returns:
-        Dictionary containing DataFrame metadata.
-    """
+def inspect_dataframe(df: Optional[DataFrame]) -> Dict[str, Any]:
+    """Inspect a DataFrame and extract schema and size metadata."""
     if df is None:
         return {}
-    
+
     return {
         "columns": df.columns,
+        "column_count": len(df.columns),
         "row_count": df.count(),
-        "schema": str(df.schema),
+        "schema_fields": [f.name for f in df.schema.fields],
         "dtypes": df.dtypes,
     }
 
 
-def filter_dataframe(df: Any, condition: str) -> Any:
-    """Filter a DataFrame based on a condition.
-    
-    Args:
-        df: DataFrame to filter.
-        condition: SQL-like condition string.
-        
-    Returns:
-        Filtered DataFrame or None.
-    """
+def filter_dataframe(df: Optional[DataFrame], condition: str) -> Optional[DataFrame]:
+    """Filter rows of a DataFrame using an expression condition."""
     if df is None:
         return None
-    
     return df.filter(condition)
 
 
-def select_columns(df: Any, columns: List[str]) -> Any:
-    """Select specific columns from a DataFrame.
-    
-    Args:
-        df: DataFrame to select from.
-        columns: List of column names to select.
-        
-    Returns:
-        DataFrame with selected columns or None.
-    """
+def select_columns(df: Optional[DataFrame], columns: List[str]) -> Optional[DataFrame]:
+    """Select specific columns from a DataFrame."""
     if df is None:
         return None
-    
-    return df.select(columns)
+    return df.select(*columns)
 
 
-def sample_data() -> List[tuple]:
-    """Get sample employee data.
-    
-    Returns:
-        List of employee tuples.
-    """
+def sample_data() -> List[Tuple[int, str, str, float]]:
+    """Return sample employee records (id, name, department, salary)."""
     return [
-        (1, "Alice", 50000.0),
-        (2, "Bob", 60000.0),
-        (3, "Charlie", 55000.0),
-        (4, "Diana", 75000.0),
-        (5, "Eve", 65000.0),
+        (1, "Alice", "Engineering", 95000.0),
+        (2, "Bob", "Marketing", 62000.0),
+        (3, "Charlie", "Engineering", 110000.0),
+        (4, "Diana", "Product", 88000.0),
+        (5, "Evan", "Engineering", 105000.0),
     ]
